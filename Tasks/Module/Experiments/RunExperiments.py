@@ -4,12 +4,39 @@ from abc import ABC, abstractmethod
 from . import GetData as gd
 
 def run_experiments(classifier):
+    # These experiments for each classifier:
+    # all training sets
+    # a new set with 4000 instances of the training set moved into the test set
+    # a new  set with 9000 instances of the training set moved into the test set
+    raise NotImplementedError
+
+def run_experiment(classifier):
+    # Step 1:
+    # Run classifiers using 10-fold cross validation for various learning parameters on the training sets
+    # Step 2:
+    # Visualise results
+    raise NotImplementedError
+
+def k_folds(classifier):
     X, y = gd.get_data(1)
 
     kf = KFold(n_splits=10)
     for train_index, test_index in kf.split(X):
-
         classifier.run_classifier(X, y)
+    raise NotImplementedError
+
+def calc_F_measure():
+    raise NotImplementedError
+
+def calc_ROC_area():
+    raise NotImplementedError
+
+def visualise():
+    raise NotImplementedError
+
+def new_test_set(num_instances=4000):
+    raise NotImplementedError
+
 
 class Classifier(ABC):
     @abstractmethod
