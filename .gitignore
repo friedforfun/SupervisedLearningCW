@@ -136,8 +136,13 @@ dmypy.json
 .vscode/*
 
 # ignore the huge data file
-x_train_gr_smpl.csv
 equal_width_binning.csv
+x_test_gr_smpl.csv
+x_test_smpl_bin.csv
+x_train_gr_smpl.csv
+x_train_smpl_bin.csv
+
+
 
 # APPLE garbage
 */__MACOSX/*
