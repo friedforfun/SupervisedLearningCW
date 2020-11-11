@@ -1,4 +1,5 @@
 from sklearn.model_selection import KFold
+from sklearn.metrics import confusion_matrix
 from abc import ABC, abstractmethod
 from . import GetData as gd
 
@@ -6,9 +7,9 @@ def run_experiments(classifier):
     X, y = gd.get_data(1)
 
     kf = KFold(n_splits=10)
-    for train, test in kf.split(X):
-        pass
-    classifier.run_classifier(X, y)
+    for train_index, test_index in kf.split(X):
+
+        classifier.run_classifier(X, y)
 
 class Classifier(ABC):
     @abstractmethod
@@ -19,14 +20,12 @@ class Classifier(ABC):
         :type X: pandas.dataframe
         :param y: y labels for data
         :type y: pandas.dataframe
-        :return: 4-tuple of confusion matrix
-        :rtype: (int, int, int, int)
+        :return: An instance of a confusion matrix from sklearn
+        :rtype: confusion_matrix
         """
-        true_positive = None
-        false_positive = None
-        false_negative = None
-        true_negative = None
-        return (true_positive, false_positive, false_negative, true_negative)
+
+        #https://scikit-learn.org/stable/modules/generated/sklearn.metrics.confusion_matrix.html
+        return confusion_matrix(None, None)
 
 
 # Example of using inheritence
@@ -41,4 +40,6 @@ class NaiveBayse(Classifier):
         return self.score()
 
     def score(self):
-        return (0,0,0,0)
+        y_pred = ["ant", "ant", "cat", "cat", "ant", "cat"]
+        y_true = ["cat", "ant", "cat", "cat", "ant", "bird"]
+        return confusion_matrix(y_pred, y_true)
