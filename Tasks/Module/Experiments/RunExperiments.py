@@ -22,7 +22,9 @@ def k_folds(classifier):
 
     kf = KFold(n_splits=10)
     for train_index, test_index in kf.split(X):
-        classifier.run_classifier(X, y)
+        X_train, X_test = X[train_index], X[test_index]
+        y_train, y_test = y[train_index], y[test_index]
+        classifier.run_classifier(X_train, y_train)
     raise NotImplementedError
 
 def calc_F_measure():
