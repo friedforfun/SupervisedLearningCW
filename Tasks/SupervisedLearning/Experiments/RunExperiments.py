@@ -82,7 +82,10 @@ class Classifier(ABC):
         """
 
         #https://scikit-learn.org/stable/modules/generated/sklearn.metrics.confusion_matrix.html
-        return confusion_matrix(None, None)
+        #! Make sure the true label is the first arg on confusion matrix and the second is pred
+        true_label = None
+        pred_label = None
+        return confusion_matrix(true_label, pred_label)
 
     @abstractmethod
     def build_classifier(self, X, y):
