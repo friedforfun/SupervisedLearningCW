@@ -30,6 +30,7 @@ def run_experiment(classifier, X, y, stratified=False, n_splits=10, **kwargs):
         X_train, X_test = X[train_indices], X[test_indices]
         y_train, y_test = y[train_indices], y[test_indices]
 
+        classifier.build_classifier(X_train, y_train)
         train_scores[i] = classifier.run_classifier(X_train, y_train)
         test_scores[i] = classifier.run_classifier(X_test, y_test)
     
@@ -80,20 +81,32 @@ class Classifier(ABC):
         #https://scikit-learn.org/stable/modules/generated/sklearn.metrics.confusion_matrix.html
         return confusion_matrix(None, None)
 
+    @abstractmethod
+    def build_classifier(self, X, y):
+        """Abstract method to use to fit the classifier to X and y
+
+        :param X: X data
+        :type X: numpy.array
+        :param y: y labels for data
+        :type y: numpy.array
+        """
+        pass
+
 
 # Example of using inheritence
 class NaiveBayse(Classifier):
     def __init__(self, typ='gaussian'):
         if typ == 'gaussian':
             self.classifier = None
-        
+    
 
     def run_classifier(self, X, y):
-        self.classifier.fit(X, y)
+        #self.classifier.fit(X, y)
         # do classifier stuff in here
-        return self.score()
+        self.classifier.pred()
+        return self.build_conf()
 
-    def score(self):
+    def build_conf(self):
         y_pred = ["ant", "ant", "cat", "cat", "ant", "cat"]
         y_true = ["cat", "ant", "cat", "cat", "ant", "bird"]
         return confusion_matrix(y_pred, y_true)
