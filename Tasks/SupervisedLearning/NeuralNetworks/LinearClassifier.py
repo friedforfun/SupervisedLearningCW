@@ -2,12 +2,14 @@ from ..Experiments.RunExperiments import Classifier
 from sklearn.linear_model import LogisticRegression
 
 class LinearClassifier(Classifier):
-    def __init__():
-        pass
+    def __init__(self, kind='lr'):
+
+        self.lr = LogisticRegression()
+
 
     def run_classifier(self, X, y):
-        # lr = LogisticRegression()
-        # lr.fit(X, y)
+
+        self.lr.fit(X, y)
 
         self.classifier.fit(X, y)
 
