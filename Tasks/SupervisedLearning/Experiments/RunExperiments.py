@@ -20,12 +20,15 @@ def run_experiment(classifier):
 def k_folds(classifier):
     X, y = gd.get_data(1)
 
+    scores = []    
     kf = KFold(n_splits=10)
     for train_index, test_index in kf.split(X):
         X_train, X_test = X[train_index], X[test_index]
         y_train, y_test = y[train_index], y[test_index]
         classifier.run_classifier(X_train, y_train)
-    raise NotImplementedError
+
+        scores.append(classifier.score(X_test, y_test))
+    return np.mean(scores)
 
 def calc_F_measure():
     raise NotImplementedError
