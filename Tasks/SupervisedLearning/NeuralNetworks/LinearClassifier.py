@@ -1,9 +1,9 @@
-from ..Experiments import RunExperiments as re
+from ..Experiments.RunExperiments import Classifier
 from sklearn.linear_model import LogisticRegression
 
-class LinearClassifier(re.Classifier):
+class LinearClassifier(Classifier):
     def __init__():
-
+        pass
 
     def run_classifier(self, X, y):
         # lr = LogisticRegression()
