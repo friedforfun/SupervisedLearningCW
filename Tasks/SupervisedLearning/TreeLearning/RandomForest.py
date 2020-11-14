@@ -1,7 +1,6 @@
-from ..Experiments import RunExperiments as re
+from ..Experiments.RunExperiments import Classifier
 
-class RandomForest(re.Classifier):
-
+class RandomForest(Classifier):
 
     def run_classifier(self, X, y):
         raise NotImplementedError

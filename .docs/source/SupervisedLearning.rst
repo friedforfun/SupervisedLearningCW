@@ -11,6 +11,9 @@ Subpackages
    SupervisedLearning.NeuralNetworks
    SupervisedLearning.TreeLearning
 
+Submodules
+----------
+
 Module contents
 ---------------
 

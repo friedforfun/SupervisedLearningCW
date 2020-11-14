@@ -1,5 +1,5 @@
-Tasks
-=====
+SupervisedLearning
+==================
 
 .. toctree::
    :maxdepth: 4
