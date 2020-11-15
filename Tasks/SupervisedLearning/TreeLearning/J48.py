@@ -1,6 +1,6 @@
-from ..Experiments import RunExperiments as re
+from ..Experiments.abstract import Classifier
 
-class J48(re.Classifier):
+class J48(Classifier):
 
 
     def run_classifier(self, X, y):

@@ -1,4 +1,4 @@
-from ..Experiments.RunExperiments import Classifier
+from ..Experiments.abstract import Classifier
 from sklearn.linear_model import LogisticRegression
 
 class LinearClassifier(Classifier):
