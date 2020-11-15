@@ -11,13 +11,11 @@ class LinearClassifier(Classifier):
 
         self.lr.fit(X, y)
 
-        self.classifier.fit(X, y)
+        y_pred = self.lr.predict(x_test)
 
-        y_pred = lr.predict(x_test)
+        return self.lr.score(X, y)
 
-        return lr.score(X, y)
-        return confusion_matrix(y_test, y_pred)
 
-    def score(self):
-        return confusion_matrix(y_test, y_pred)
+    def score(self, X, y):
+        pass
 
