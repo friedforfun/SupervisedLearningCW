@@ -40,3 +40,22 @@ class MultiLayerPerceptron(Classifier):
 
         return confusion_matrix(y, pred)
 
+    def prediction(self, X):
+        """Infer labels given X
+
+        :param X: Data to make prediction on
+        :type X: numpy.array
+        :return: An array of labels
+        :rtype: numpy.array
+        """
+        return self.mlp.predict(X)
+
+    def prediction_proba(self, X):
+        """Infer the probabilities of each label given X
+
+        :param X: Data to make prediction on
+        :type X: numpy.array
+        :return: An array of probailities
+        :rtype: numpy.array
+        """
+        return self.mlp.predict_proba(X)
