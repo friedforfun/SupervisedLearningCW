@@ -16,6 +16,9 @@ class LinearClassifier(Classifier):
     def get_classifier(self):
         return self.lr
 
+    def prediction(self, x):
+        self.lr.predict(x)
+
     def score(self, x, y):
         # X_test, y_test
         return self.lr.score(x, y)
