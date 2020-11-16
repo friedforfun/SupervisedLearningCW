@@ -1,23 +1,24 @@
 from ..Experiments.RunExperiments import Classifier
 from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import confusion_matrix
 
 class LinearClassifier(Classifier):
-    def __init__(self, kind='lr'):
+    def __init__(self, kind='lr', **kwargs):
+        self.lr = LogisticRegression(**kwargs)
 
-        self.lr = LogisticRegression()
-
-
-    def run_classifier(self, X, y):
-
+    def build_classifier(self, X, y):
         self.lr.fit(X, y)
 
-        self.classifier.fit(X, y)
+    def run_classifier(self, X, y):
+        pred = self.lr.predict(X)
+        return confusion_matrix(y, pred)
 
-        y_pred = lr.predict(x_test)
+    def get_classifier(self):
+        return self.lr
 
-        return lr.score(X, y)
-        return confusion_matrix(y_test, y_pred)
+    def prediction(self, x):
+        self.lr.predict(x)
 
-    def score(self):
-        return confusion_matrix(y_test, y_pred)
-
+    def score(self, x, y):
+        # X_test, y_test
+        return self.lr.score(x, y)
