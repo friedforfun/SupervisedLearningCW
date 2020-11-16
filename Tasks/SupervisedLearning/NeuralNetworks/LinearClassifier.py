@@ -13,6 +13,9 @@ class LinearClassifier(Classifier):
         pred = self.lr.predict(X)
         return confusion_matrix(y, pred)
 
+    def get_classifier(self):
+        return self.lr
+
     def score(self, x, y):
         # X_test, y_test
         return self.lr.score(x, y)
