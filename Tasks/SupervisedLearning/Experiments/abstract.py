@@ -32,6 +32,12 @@ class Classifier(ABC):
         """
         pass
 
+    @abstractmethod
+    def get_classifier(self):
+        """A method to return the classifier object
+        """
+        pass
+
 
 # Example of using inheritence
 class NaiveBayse(Classifier):
