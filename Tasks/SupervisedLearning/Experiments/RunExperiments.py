@@ -1,9 +1,11 @@
 from sklearn.model_selection import KFold, StratifiedKFold
+import wandb
 from . import GetData as gd
 
 
 
-def run_all_experiments(classifier):
+def run_all_experiments(classifier, project_name='Supervised Learning'):
+    wandb.init(project="Supervised Learning")
     # These experiments for each classifier:
     # all training sets
     # a new set with 4000 instances of the training set moved into the test set
@@ -40,7 +42,8 @@ def run_experiment(classifier, X, y, stratified=False, n_splits=10, random_state
 
     train_scores = {}
     test_scores = {}
-    for i, (train_indices, test_indices) in enumerate(kf.n_splits(X)):
+
+    for i, (train_indices, test_indices) in enumerate(kf.split(X)):
         X_train, X_test = X[train_indices], X[test_indices]
         y_train, y_test = y[train_indices], y[test_indices]
 
