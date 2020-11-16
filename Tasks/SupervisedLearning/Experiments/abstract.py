@@ -38,6 +38,24 @@ class Classifier(ABC):
         """
         pass
 
+    @abstractmethod
+    def prediction(self, X):
+        """Make a prediction given X
+
+        :param X: Data to make prediction on
+        :type X: numpy.array
+        """
+        pass
+
+    @abstractmethod
+    def prediction_proba(self, X):
+        """Find the probabilities for each prediciton
+
+        :param X: Data to make prediction on
+        :type X: numpy.array
+        """
+        pass
+
 
 # Example of using inheritence
 class NaiveBayse(Classifier):
