@@ -20,6 +20,22 @@ SupervisedLearning.Experiments.RunExperiments module
    :undoc-members:
    :show-inheritance:
 
+SupervisedLearning.Experiments.abstract module
+----------------------------------------------
+
+.. automodule:: SupervisedLearning.Experiments.abstract
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+SupervisedLearning.Experiments.visualizeData module
+---------------------------------------------------
+
+.. automodule:: SupervisedLearning.Experiments.visualizeData
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 

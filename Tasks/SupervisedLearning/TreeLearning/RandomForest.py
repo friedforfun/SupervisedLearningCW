@@ -1,4 +1,4 @@
-from ..Experiments.RunExperiments import Classifier
+from ..Experiments.abstract import Classifier
 
 class RandomForest(Classifier):
 
