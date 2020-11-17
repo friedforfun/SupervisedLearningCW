@@ -78,7 +78,10 @@ def get_data(result_id=-1, train=True):
     :return: A tuple of the data collection
     :rtype: (pandas.df, pandas.df)
     """
-    x = get_dataset(get_file_path('x_train_gr_smpl.csv'))
+    if train:
+        x = get_dataset(get_file_path('x_train_gr_smpl.csv'))
+    else:
+        x = get_dataset(get_file_path('x_test_gr_smpl.csv'))
     filePicker = result_file_selector(result_id, train)
     y = get_dataset(get_file_path(filePicker))
     y.columns = ['y']

@@ -6,6 +6,7 @@ class MultiLayerPerceptron(Classifier):
     """A multilayer perceptron with an interface used for running experiments
     """
     def __init__(self, **kwargs):
+        self.hyper_params = kwargs
         self.mlp = MLPClassifier(**kwargs)
 
     def get_classifier(self):
@@ -15,6 +16,9 @@ class MultiLayerPerceptron(Classifier):
         :rtype: sklearn.neural_network.MLPClassifier
         """
         return self.mlp
+
+    def get_params(self):
+        return self.hyper_params
     
     def build_classifier(self, X, y):
         """Fit the classifier to the provided data
