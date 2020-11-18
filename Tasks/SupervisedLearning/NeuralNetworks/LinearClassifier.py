@@ -6,7 +6,11 @@ class LinearClassifier(Classifier):
     """A Linear Classifier with an interface used for running experiments
     """
     def __init__(self, kind='lr', **kwargs):
+        self.hyper_params = kwargs
         self.lr = LogisticRegression(**kwargs)
+
+    def get_params(self):
+        return self.hyper_params
 
     def build_classifier(self, X, y):
         """Fit the classifier to the provided data
@@ -40,6 +44,13 @@ class LinearClassifier(Classifier):
         return self.lr
 
     def prediction(self, x):
+        """Infer labels given X
+
+        :param X: Data to make prediction on
+        :type X: numpy.array
+        :return: An array of labels
+        :rtype: numpy.array
+        """
         return self.lr.predict(x)
 
     def prediction_proba(self, X):
