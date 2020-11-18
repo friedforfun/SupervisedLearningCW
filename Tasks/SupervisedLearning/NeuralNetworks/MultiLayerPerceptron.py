@@ -9,6 +9,7 @@ class MultiLayerPerceptron(Classifier):
         self.hyper_params = kwargs
         self.mlp = MLPClassifier(**kwargs)
 
+
     def get_classifier(self):
         """Get the mlp classifier object
 

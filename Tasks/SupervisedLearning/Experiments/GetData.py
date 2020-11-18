@@ -86,3 +86,55 @@ def get_data(result_id=-1, train=True):
     y = get_dataset(get_file_path(filePicker))
     y.columns = ['y']
     return x, y
+
+
+def append_result_col(data, result):
+    """Return a new dataframe with result column in data
+
+    :param data: The dataset without the result column
+    :type data: pandas.df
+    :param result: The result vector to append to data
+    :type result: pandas.df
+    """
+    result.columns = ['y']
+    return data.join(result)
+
+
+def balance_by_class(X, y, max_data_size=None, allow_imbalanced_class_dist=False, random_state=0):
+    """Select a sample of the data with a balanced class distribution
+
+    :param X: data
+    :type X: pandas.df
+    :param y: labels
+    :type y: pandas.df
+    :param max_data_size: size of sample. Defaults to None -> in this case the sample returned will be the size of the smallest class
+    :type max_data_size: int, Optional
+    :param allow_imbalanced_class_dist: If size param > number of rows in smallest class indicate if allowing an imbalanced class distribution is ok
+    :type allow_imbalanced_class_dist: Bool, Optional
+    :param random_state: Random_state used for ksplits and balancing, defaults to 0
+    :type random_state: int, optional
+    :return: the sample and labels
+    :rtype: tuple(pandas.df, pandas.df)
+    """
+    data = append_result_col(X, y)
+    classes = np.unique(y)
+    datasets = []
+    smallest_size = data.shape[0]
+    for i in range(len(classes)):
+        temp_sample = data[data['y'] == classes[i]]
+        datasets += [temp_sample.sample(frac=1, random_state=random_state)]
+        if temp_sample.shape[0] < smallest_size:
+            smallest_size = temp_sample.shape[0]
+    frame = pandas.DataFrame(columns=data.columns)
+    if max_data_size is None:
+        for df in datasets:
+            frame = frame.append(df.head(smallest_size))
+    else:
+        if allow_imbalanced_class_dist and max_data_size > smallest_size:
+            raise ValueError(
+                "Size argument is too large for a balanced dataset")
+        for df in datasets:
+            frame = frame.append(df.head(max_data_size))
+    y_res = frame[['y']]
+    X_res = frame.drop('y', 1)
+    return X_res, y_res

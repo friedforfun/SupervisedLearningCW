@@ -17,6 +17,7 @@ label_dict = {
 }
 
 g_labels = [label_dict.get(i) for i in range(-1, 10)]
+binary_labels = ['yes', 'no']
 
 def run_all_experiments(classifier, project_name='Supervised Learning'):
     # These experiments for each classifier:
@@ -26,7 +27,14 @@ def run_all_experiments(classifier, project_name='Supervised Learning'):
     raise NotImplementedError
 
 
-def run_KFold_experiment(classifier, X, y, classifier_name='', classes_desc='all-classes', class_labels=g_labels, stratified=False, n_splits=10, random_state=0, **kwargs):
+"""
+
+    
+    
+    
+    
+    """
+def run_KFold_experiment(classifier, X, y, classifier_name='', classes_desc='all-classes', class_labels=g_labels, stratified=False, balance_classes=False, n_splits=10, random_state=0, **kwargs):
     """Run 1 experiment with K-fold cross validation
 
     :param classifier: A configured instance of a classifier inheriting from Classifier interface
@@ -35,18 +43,32 @@ def run_KFold_experiment(classifier, X, y, classifier_name='', classes_desc='all
     :type X: pandas.DataFrame
     :param y: label data
     :type y: pandas.DataFrane
+    :param classifier_name: The name of the classifier being used to run this experiment, defaults to ''
+    :type classifier_name: str, optional
+    :param classes_desc: A description of the class labels being used, defaults to 'all-classes'
+    :type classes_desc: str, optional
+    :param class_labels: [description], defaults to g_labels
+    :type class_labels: [type], optional
     :param stratified: Use stratified k-fold?, defaults to False
     :type stratified: bool, optional
+    :param balance_classes: Balance the class distribution, defaults to False
+    :type balance_classes: bool, optional
     :param n_splits: number of k-fold splits, defaults to 10
     :type n_splits: int, optional
+    :param random_state: Random_state used for ksplits and balancing, defaults to 0
+    :type random_state: int, optional
     :return: Tuple of dicts showing scores for each fold
     :rtype: Tuple(dict, dict)
     """
+    
     Experiment_name = 'SL-KFolds_{}_classifer-{}_stratified-{}'.format(classes_desc, classifier_name, stratified)
     hyperparam_dict = classifier.get_params()
     # Run classifiers using 10-fold cross validation for various learning parameters on the training sets
+    if balance_classes:
+        X, y = gd.balance_by_class(X, y, random_state=random_state, **kwargs)
+
     X = X.to_numpy()
-    y = y.to_numpy()
+    y = y.to_numpy(dtype='int64')
 
     if stratified:
         # StratifiedKFold(n_splits=5, shuffle=False, random_state=None)
