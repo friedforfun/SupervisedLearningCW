@@ -105,6 +105,9 @@ def calc_ROC_area():
 def visualise():
     raise NotImplementedError
 
-def new_test_set(num_instances=4000):
-    raise NotImplementedError
+def new_test_set(training, testing, num_instances=4000):
+    # move 4000 random from training to testing
+    rows_to_move = training.sample(n=num_instances)
+    
+    return testing.append(rows_to_move, ignore_index=True)
 

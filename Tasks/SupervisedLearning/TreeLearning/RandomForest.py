@@ -6,8 +6,12 @@ import graphviz
 class RandomForest(Classifier):
     """A Random Forest with an interface used for running experiments
     """
-    def __init__(self):
-        self.rf = RandomForestClassifier(verbose=2)
+    def __init__(self,**kwargs):
+        self.hyper_params = kwargs
+        self.rf = RandomForestClassifier(**kwargs)
+    
+    def get_params(self):
+        return self.hyper_params
 
     def run_classifier(self, X, y):
             """Make a prediction and return the confusion matrix for given labelled dataset
@@ -46,12 +50,10 @@ class RandomForest(Classifier):
         y_pred = self.rf.predict(X)
         return y_pred
 
-    def prediction_proba(self,X,y):
+    def prediction_proba(self,X):
         """Find the probablitities for each prediction
 
         :param X: Data to make prediction on
         :type X: numpy.array
         """
         return self.rf.predict_proba(X)    
-
-    
