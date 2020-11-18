@@ -56,6 +56,12 @@ class Classifier(ABC):
         """
         pass
 
+    @abstractmethod
+    def get_params(self):
+        """Returns a dictionary of all the classifier hyperparameters
+        """
+        pass
+
 
 # Example of using inheritence
 class NaiveBayse(Classifier):
