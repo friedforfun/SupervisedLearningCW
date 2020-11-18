@@ -60,7 +60,7 @@ def run_KFold_experiment(classifier, X, y, classifier_name='', classes_desc='all
     test_scores = {}
 
     for i, (train_indices, test_indices) in enumerate(kf.split(X=X, y=y)):
-        with wandb.init(project=Experiment_name, reinit=True, config=hyperparam_dict):
+        with wandb.init(project=Experiment_name, entity='supervisedlearning', reinit=True, config=hyperparam_dict):
             X_train, X_test = X[train_indices], X[test_indices]
             y_train, y_test = y[train_indices], y[test_indices]
 
