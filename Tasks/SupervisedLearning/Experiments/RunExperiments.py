@@ -27,13 +27,6 @@ def run_all_experiments(classifier, project_name='Supervised Learning'):
     raise NotImplementedError
 
 
-"""
-
-    
-    
-    
-    
-    """
 def run_KFold_experiment(classifier, X, y, classifier_name='', classes_desc='all-classes', class_labels=g_labels, stratified=False, balance_classes=False, n_splits=10, random_state=0, **kwargs):
     """Run 1 experiment with K-fold cross validation
 
@@ -47,8 +40,8 @@ def run_KFold_experiment(classifier, X, y, classifier_name='', classes_desc='all
     :type classifier_name: str, optional
     :param classes_desc: A description of the class labels being used, defaults to 'all-classes'
     :type classes_desc: str, optional
-    :param class_labels: [description], defaults to g_labels
-    :type class_labels: [type], optional
+    :param class_labels: The labels of each classification in the dataset, defaults to g_labels
+    :type class_labels: list(str), optional
     :param stratified: Use stratified k-fold?, defaults to False
     :type stratified: bool, optional
     :param balance_classes: Balance the class distribution, defaults to False
