@@ -26,7 +26,7 @@ class J48(Classifier):
         self.j48.fit(X,y)
 
     def run_classifier(self, X, y):
-        """[summary]
+        """ Used to run the J48 tree
 
         :param X: [description]
         :type X: [type]
@@ -46,7 +46,7 @@ class J48(Classifier):
         :type X: numpy.array
         """
         
-        self.j48.predict(X)
+        return self.j48.predict(X)
     
     def prediction_proba(self, X):
         """Find the probablitities for each prediction
@@ -55,10 +55,10 @@ class J48(Classifier):
         :type X: numpy.array
         """
         
-        self.j48.predict_proba(X)
+        return self.j48.predict_proba(X)
         
     def get_params(self):
-        """[summary]
+        """
 
         :return: [description]
         :rtype: [type]
@@ -67,7 +67,7 @@ class J48(Classifier):
         return self.hyper_params
     
     def get_classifier(self):
-        """[summary]
+        """
 
         :return: [description]
         :rtype: [type]
@@ -76,7 +76,7 @@ class J48(Classifier):
         return self.j48
                             
     def print_tree():
-        """[summary]
+        """ Print the tree
         """
         
         dot_data = j48.export_graphviz(self.j48, out_file=None) 
