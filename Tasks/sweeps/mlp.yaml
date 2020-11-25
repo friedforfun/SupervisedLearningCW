@@ -1,4 +1,6 @@
 program: /home/sam/Projects/SupervisedLearningCW/Tasks/sweeps/MLP.py
+entity: supervisedlearning
+project: MLP-sweeps
 method: bayes
 metric:
   goal: minimize
