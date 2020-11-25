@@ -58,7 +58,7 @@ hyperparam_defaults = {
 #! ----------------------------------------------------------------------------------------
 
 # Pass defaults to wandb.init
-wandb.init(config=hyperparam_defaults)
+wandb.init(config=hyperparam_defaults, entity='supervisedlearning', project='SL-sweeps')
 
 config = wandb.config
 

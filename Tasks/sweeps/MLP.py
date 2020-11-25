@@ -13,7 +13,7 @@ from Tasks.SupervisedLearning.NeuralNetworks.MultiLayerPerceptron import MultiLa
 #
 # Then as described in step 3 here:  https://docs.wandb.com/sweeps/quickstart
 #
-# Define your .yaml file
+# Define your .yaml file with the args set up in your hyperparamater dict and their boundaries
 # Run
 # $ wandb sweep <path to .yaml>
 #
@@ -35,7 +35,15 @@ def parse_args():
                         help='Max iterations', dest='max_iter', type=int)
     parser.add_argument('-hls', '--hidden_layer_sizes', nargs=1,
                         help='Hidden layer size', dest='hidden_layer_sizes', type=int)
-
+    parser.add_argument('-ac', '--activation', nargs=1, dest='activation', type=str, 
+                        help='Activation function for the hidden layer')
+    parser.add_argument('-s', '--solver', nargs=1, dest='solver', type=str, 
+                        help='The solver for weight optimization.')
+    parser.add_argument('-a', '--alpha', nargs=1, dest='alpha', type=float, 
+                        help='L2 penalty (regularization term) parameter.')
+    parser.add_argument('-lr', '--learning_rate', nargs=1, dest='learning_rate', type=str, 
+                        help='Learning rate schedule for weight updates.')
+    
     #! -----------------------------------------------------------------------------------
     return parser.parse_args()
 
@@ -51,12 +59,16 @@ DATA_FOLDER = '/home/sam/Projects/SupervisedLearningCW/Tasks/Data/'
 # so they get properly set in the sweep
 hyperparam_defaults = {
     'max_iter': 100,
-    'hidden_layer_sizes': 200
+    'hidden_layer_sizes': 200,
+    'activation': 'relu',
+    'solver': 'adam',
+    'alpha': 0.0001,
+    'learning_rate': 'constant'
 }
 #! ----------------------------------------------------------------------------------------
 
 # Pass defaults to wandb.init
-wandb.init(config=hyperparam_defaults)
+wandb.init(config=hyperparam_defaults, entity='supervisedlearning', project='SL-sweeps')
 
 config = wandb.config
 
@@ -71,10 +83,14 @@ def run(args):
         # Type of these args is a list, value at index 0 is the arg
         max_iter = args.max_iter[0]
         hidden_layer_sizes = args.hidden_layer_sizes[0]
+        activation = args.activation[0]
+        solver = args.solver[0]
+        alpha = args.alpha[0]
+        learning_rate = args.learning_rate[0]
 
         # pass arg into classifer
         model = MultiLayerPerceptron(
-            max_iter=max_iter, hidden_layer_sizes=hidden_layer_sizes)
+            max_iter=max_iter, hidden_layer_sizes=hidden_layer_sizes, activation=activation, solver=solver, alpha=alpha, learning_rate=learning_rate)
         #! ----------------------------------------------------------------------
         X, y = gd.get_data(
             root_path=DATA_FOLDER)

@@ -5,10 +5,19 @@ metric:
   name: "loss"
 parameters:
   hidden_layer_sizes:
-    max: 300
+    max: 500
     min: 75
     distribution: int_uniform
   max_iter:
     max: 600
     min: 150
     distribution: int_uniform
+  activation:
+    values: ['identity', 'logistic', 'tanh', 'relu']
+  solver:
+    values: ['lbfgs', 'sgd', 'adam']
+  alpha:
+    max: 0.001
+    min: 0.00001
+  learning_rate:
+    values: ['constant', 'invscaling', 'adaptive']
