@@ -47,7 +47,7 @@ def result_file_selector(id, train=True):
         return test_result_files.get(id, 'y_train_smpl.csv')
 
 
-def get_file_path(filename, my_path=os.path.abspath(os.path.dirname("Data/"))):
+def get_file_path(filename, path='Data/'):
     """Construct the filepath string, takes name of file as arg
 
     :param filename: The name of the file to be imported
@@ -55,7 +55,8 @@ def get_file_path(filename, my_path=os.path.abspath(os.path.dirname("Data/"))):
     :return: The absolute path to the file
     :rtype: string
     """
-    return os.path.join(my_path, filename)
+    path= os.path.abspath(os.path.dirname(path))
+    return os.path.join(path, filename)
 
 def get_dataset(filepath):
     """Use get_random_data() instead. 
@@ -69,8 +70,7 @@ def get_dataset(filepath):
     return pandas.read_csv(filepath, header='infer')
 
 
-
-def get_data(result_id=-1, train=True):
+def get_data(result_id=-1, train=True, root_path='Data/'):
     """Get a tuple of the result and data csv
 
     :param result_id: The index of the result datafile, defaults to -1
@@ -79,11 +79,11 @@ def get_data(result_id=-1, train=True):
     :rtype: (pandas.df, pandas.df)
     """
     if train:
-        x = get_dataset(get_file_path('x_train_gr_smpl.csv'))
+        x = get_dataset(get_file_path('x_train_gr_smpl.csv', path=root_path))
     else:
-        x = get_dataset(get_file_path('x_test_gr_smpl.csv'))
+        x = get_dataset(get_file_path('x_test_gr_smpl.csv', path=root_path))
     filePicker = result_file_selector(result_id, train)
-    y = get_dataset(get_file_path(filePicker))
+    y = get_dataset(get_file_path(filePicker, path=root_path))
     y.columns = ['y']
     return x, y
 
