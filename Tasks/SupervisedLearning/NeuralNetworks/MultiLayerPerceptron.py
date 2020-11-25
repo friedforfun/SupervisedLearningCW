@@ -2,6 +2,8 @@ from ..Experiments.abstract import Classifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import confusion_matrix
 
+
+
 class MultiLayerPerceptron(Classifier):
     """A multilayer perceptron with an interface used for running experiments
     """
