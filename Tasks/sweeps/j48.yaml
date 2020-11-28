@@ -24,7 +24,7 @@ parameters:
     min: 0.0
   max_features:
     values: ['auto', 'sqrt', 'log2']
-  random_stateint:
+  random_state:
     max: 99999
     min: 0
   max_leaf_nodes: 
