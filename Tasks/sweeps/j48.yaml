@@ -19,8 +19,20 @@ parameters:
   min_samples_leaf:
     max: 10
     min: 1
+  min_weight_fraction_leaffloat:
+    max: 10.0
+    min: 0.0
   max_features:
     values: ['auto', 'sqrt', 'log2']
+  random_stateint:
+    max: 99999
+    min: 0
+  max_leaf_nodes: 
+    max: 10
+    min: 1
+  min_impurity_decrease:
+    max: 10.0
+    min: 0.0
 
 
 
