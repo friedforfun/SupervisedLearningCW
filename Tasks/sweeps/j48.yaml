@@ -1,10 +1,10 @@
-program: /home/sam/Projects/SupervisedLearningCW/Tasks/sweeps/MLP.py
+program: /home/sam/Projects/SupervisedLearningCW/Tasks/sweeps/sweepJ48.py
 entity: supervisedlearning
 project: J48-sweeps
 method: bayes
 metric:
-  goal: minimize
-  name: "loss"
+  goal: maximize
+  name: "accuracy"
 parameters:
   criterion:
     values: ['gini', 'entropy']
