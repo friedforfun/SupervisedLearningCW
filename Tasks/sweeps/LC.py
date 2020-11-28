@@ -43,6 +43,8 @@ def parse_args():
                         help='Inverse of regularization strength')
     parser.add_argument('-fi', '--fit_intercept', nargs=1, dest='fit_intercept', type=bool, 
                         help='Specifies if a constant (a.k.a. bias) should be added to the decision function')
+    parser.add_argument('-l1', '--l1_ratio', nargs=1, dest='l1_ratio', type=bool, 
+                        help='L1 ratio')
     
     #! -----------------------------------------------------------------------------------
     return parser.parse_args()
@@ -63,7 +65,8 @@ hyperparam_defaults = {
     'tol': 1e-4,
     'C': 1.0,
     'fit_intercept': True,
-    'solver': 'lbfgs'
+    'solver': 'lbfgs',
+    'l1_ratio': None
 }
 #! ----------------------------------------------------------------------------------------
 
