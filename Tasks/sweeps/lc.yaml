@@ -15,11 +15,9 @@ parameters:
   tol:
     max: 1e-3
     min: 1e-4
-    distribution: int_uniform
   C:
     max: 1.2
     min: 0.8
-    distribution: int_uniform
   fit_intercept:
     values: [True, False]
   solver:

@@ -106,7 +106,7 @@ def run(args):
         accuracy = accuracy_score(y_test, y_pred)
 
         # Log metrics inside your training loop
-        metrics = {'accuracy': accuracy, 'loss': model.mlp.loss_}
+        metrics = {'accuracy': accuracy}
         wandb.log(metrics)
 
     except TypeError as e:
