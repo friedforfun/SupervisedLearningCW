@@ -26,6 +26,9 @@ def parse_args():
     :return: Argument parser with config
     :rtype: ArgumentParser
     """
+    
+
+    
     parser = argparse.ArgumentParser()
     #!----------------------- STEP 1: ADD AGRUMENTS HERE ---------------------------------
     # Follow this syntax, the first arg cannot be '-h' the second arg should be the same as its key in hyperparam_defaults
@@ -39,6 +42,8 @@ def parse_args():
                         help='maximum depth of the tree', dest='max_depth', type=int)
     parser.add_argument('-mss', '--min_samples_split', nargs=1,
                         help='min no of samples to split internal node', dest='min_samples_split', type=int)
+    parser.add_argument('-msl', '--min_samples_leaf', nargs=1,
+                        help='The minimum number of samples required to be at a leaf node', dest='min_samples_leaf', type=int)
     parser.add_argument('-mwfl', '--min_weight_fraction_leaffloat', nargs=1,
                         help='minimum weighted fraction of the sum total of weights required to be at a leaf node', dest='min_weight_fraction_leaffloat', type=float)
     parser.add_argument('-mf', '--max_features', nargs=1,
