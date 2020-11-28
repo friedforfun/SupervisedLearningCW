@@ -43,6 +43,8 @@ def parse_args():
                         help='min no of samples to split internal node', dest='min_samples_split', type=int)
     parser.add_argument('-msl', '--min_samples_leaf', nargs=1,
                         help='min no of samples required at leaf node', dest='min_samples_leaf', type=int)
+    parser.add_argument('-mwfl', '--min_weight_fraction_leaf', nargs=1,
+                        help='The minimum weighted fraction of the sum total of weights (of all the input samples) required to be at a leaf node.', dest='min_weight_fraction_leaf', type=float)
     #! -----------------------------------------------------------------------------------
     return parser.parse_args()
 
@@ -50,7 +52,7 @@ def parse_args():
 #! ---------------------------STEP 2:  SET ABS PATH TO DATA -------------------------------
 # This should be the absolute path to the data folder
 # Dont forget to extract the rar file in the repository
-DATA_FOLDER = 'home\Jimmy\GitHub Repos\SupervisedLearningCW\Tasks\Data'
+DATA_FOLDER = '/home/sam/Projects/SupervisedLearningCW/Tasks/Data/'
 
 #! ----------------------------------------------------------------------------------------
 
@@ -61,7 +63,6 @@ DATA_FOLDER = 'home\Jimmy\GitHub Repos\SupervisedLearningCW\Tasks\Data'
 # so they get properly set in the sweep
 hyperparam_defaults = {
     'n_estimators': 100,
-    'verbose': 2,
     'criterion': 'gini',
     'max_features' : 'auto',
     'min_samples_split' : 2,
@@ -84,7 +85,6 @@ def run(args):
         #! ---------------STEP 4: APPLY ALL ARGS TO CLASSIFIER --------------------
         # Type of these args is a list, value at index 0 is the arg
         n_estimators = args.n_estimators[0]
-        verbose = args.verbose[0]
         criterion = args.criterion[0]
         max_features = args.max_features[0]
         min_samples_split = args.min_samples_split[0]
@@ -92,15 +92,15 @@ def run(args):
 
         # pass arg into classifer
         #! Assign your classifer to the var `model`
-        model = RandomForest(
-           n_estimators=n_estimators, verbose=verbose, criterion=criterion, max_features=max_features, min_samples_split=min_samples_split, min_samples_leaf=min_samples_leaf)
+        model = RandomForest(oob_score=True,
+           n_estimators=n_estimators, verbose=0, criterion=criterion, max_features=max_features, min_samples_split=min_samples_split, min_samples_leaf=min_samples_leaf)
         #! ----------------------------------------------------------------------
         X, y = gd.get_data(
             root_path=DATA_FOLDER)
         X, y = gd.balance_by_class(X, y, random_state=0)
 
         X = X.to_numpy()
-        y = y.to_numpy(dtype='int64')
+        y = y.to_numpy(dtype='int64').flatten()
         X_train, X_test, y_train, y_test = train_test_split(
             X, y, random_state=0, test_size=0.33)
 
@@ -109,7 +109,7 @@ def run(args):
         accuracy = accuracy_score(y_test, y_pred)
 
         # Log metrics inside your training loop
-        metrics = {'accuracy': accuracy, 'loss': model.rf.loss_}
+        metrics = {'accuracy': accuracy, 'oob_score_': model.get_classifier().oob_score_}
         wandb.log(metrics)
 
     except TypeError as e:

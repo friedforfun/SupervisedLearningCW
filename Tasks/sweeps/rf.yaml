@@ -1,18 +1,14 @@
-program: home\Jimmy\GitHub Repos\SupervisedLearningCW\Tasks\sweeps\sweepRandomForest.py
+program: /home/sam/Projects/SupervisedLearningCW/Tasks/sweeps/sweepRandomForest.py
 entity: supervisedlearning
 project: RF-sweeps
 method: bayes
 metric:
-  goal: minimize
-  name: "loss"
+  goal: maximize
+  name: "accuracy"
 parameters:
   n_estimators:
     max: 500
     min: 50
-    distribution: int_uniform
-  verbose:
-    max: 5
-    min: 2
     distribution: int_uniform
   criterion:
     values: ['gini', 'entropy']
@@ -20,7 +16,10 @@ parameters:
     values: ['auto', 'sqrt', 'log2']
   min_samples_split:
     max: 5
-    min: 2
+    min: 1
   min_samples_leaf:
     max: 10
     min: 1
+  min_weight_fraction_leaf:
+    max: 2.0
+    min: 0.0

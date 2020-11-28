@@ -1,0 +1,26 @@
+program: /home/sam/Projects/SupervisedLearningCW/Tasks/sweeps/LC.py
+entity: supervisedlearning
+project: LC-sweeps
+method: bayes
+metric:
+  goal: minimize
+  name: "loss"
+parameters:
+  max_iter:
+    max: 600
+    min: 150
+    distribution: int_uniform
+  penalty:
+    values: ['l1', 'l2', 'elasticnet', 'none']
+  tol:
+    max: 1e-3
+    min: 1e-4
+    distribution: int_uniform
+  C:
+    max: 1.2
+    min: 0.8
+    distribution: int_uniform
+  fit_intercept:
+    values: [True, False]
+  solver:
+    values: ['newton-cg', 'lbfgs', 'liblinear', 'sag', 'saga']

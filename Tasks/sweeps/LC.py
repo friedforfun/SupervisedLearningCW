@@ -6,17 +6,17 @@ from sklearn.metrics import accuracy_score
 from Tasks.SupervisedLearning.Experiments import GetData as gd
 
 #! REPLACE THIS WITH YOUR CLASSIFIER
-from Tasks.SupervisedLearning.TreeLearning.J48 import J48
+from Tasks.SupervisedLearning.NeuralNetworks.LinearClassifier import LinearClassifier
 
 
 #! Fill in all areas encapsulated in `----``
 #
 # Then as described in step 3 here:  https://docs.wandb.com/sweeps/quickstart
-# 
-# Define your .yaml file
+#
+# Define your .yaml file with the args set up in your hyperparamater dict and their boundaries
 # Run
 # $ wandb sweep <path to .yaml>
-# 
+#
 # Copy the command output by the above command and run it.
 
 
@@ -31,47 +31,44 @@ def parse_args():
     # Follow this syntax, the first arg cannot be '-h' the second arg should be the same as its key in hyperparam_defaults
     # dest is the attribute used to pass into the classifier
     # type should be defined
-    parser.add_argument('-crit', '--criterion', nargs=1,
-                        help='criterion - quality of split', dest='criterion', type=str)
-    parser.add_argument('-split', '--splitter', nargs=1,
-                        help='splitter - strategy used to choose the split at each node', dest='splitter', type=str)
-    parser.add_argument('-md', '--max_depth', nargs=1,
-                        help='maximum depth of the tree', dest='max_depth', type=int)
-    parser.add_argument('-mss', '--min_samples_split', nargs=1,
-                        help='min no of samples to split internal node', dest='min_samples_split', type=int)
-    parser.add_argument('-msl', '--min_samples_leaf', nargs=1,
-                        help='min no of samples required at leaf node', dest='min_samples_leaf', type=int)
-    parser.add_argument('-mf', '--max_features', nargs=1,
-                        help='considered no of features before split', dest='max_features', type=str)                   
+    parser.add_argument('-mi', '--max_iter', nargs=1,
+                        help='Max iterations', dest='max_iter', type=int)
+    parser.add_argument('-p', '--penalty', nargs=1,
+                        help='Penalty', dest='penalty', type=str)
+    parser.add_argument('-tol', '--tol', nargs=1, dest='tol', type=float, 
+                        help='tol')
+    parser.add_argument('-s', '--solver', nargs=1, dest='solver', type=str, 
+                        help='The solver for weight optimization.')
+    parser.add_argument('-c', '--C', nargs=1, dest='C', type=float, 
+                        help='Inverse of regularization strength')
+    parser.add_argument('-fi', '--fit_intercept', nargs=1, dest='fit_intercept', type=bool, 
+                        help='Specifies if a constant (a.k.a. bias) should be added to the decision function')
     
-
     #! -----------------------------------------------------------------------------------
     return parser.parse_args()
 
 
 #! ---------------------------STEP 2:  SET ABS PATH TO DATA -------------------------------
 # This should be the absolute path to the data folder
-# Dont forget to extract the rar file in the repository
 DATA_FOLDER = '/home/sam/Projects/SupervisedLearningCW/Tasks/Data/'
 #! ----------------------------------------------------------------------------------------
-
 
 
 #! ---------------------------STEP 3:  DEFINE HYPERPARAMETERS HERE-------------------------
 # Set up your default hyperparameters before wandb.init
 # so they get properly set in the sweep
 hyperparam_defaults = {
-    'criterion': 'gini',
-    'splitter': 'best',
-    'max_depth': 1,
-    'min_samples_split' : 2,
-    'min_samples_leaf' : 1,
-    'max_features' : 'auto'
+    'max_iter': 100,
+    'penalty': 'l2',
+    'tol': 1e-4,
+    'C': 1.0,
+    'fit_intercept': True,
+    'solver': 'lbfgs'
 }
 #! ----------------------------------------------------------------------------------------
 
 # Pass defaults to wandb.init
-wandb.init(config=hyperparam_defaults)
+wandb.init(config=hyperparam_defaults, entity='supervisedlearning', project='SL-sweeps')
 
 config = wandb.config
 
@@ -84,17 +81,16 @@ def run(args):
     try:
         #! ---------------STEP 4: APPLY ALL ARGS TO CLASSIFIER --------------------
         # Type of these args is a list, value at index 0 is the arg
-        criterion = args.criterion[0]
-        splitter = args.splitter[0]
-        max_depth = args.max_depth[0]
-        min_samples_split = args.min_samples_split[0]
-        min_samples_leaf = args.min_samples_leaf[0]
-        max_features = args.max_features[0]
-        
+        max_iter = args.max_iter[0]
+        penalty = args.penalty[0]
+        tol = args.tol[0]
+        C = args.C[0]
+        fit_intercept = args.fit_intercept[0]
+        solver = args.solver[0]
+
         # pass arg into classifer
-        #! Assign your classifer to the var `model`
-        model = J48(
-            criterion=criterion, splitter=splitter, max_depth=max_depth, min_samples_split=min_samples_split,min_samples_leaf=min_samples_leaf,max_features=max_features)
+        model = LinearClassifier(
+            max_iter=max_iter, penalty=penalty, tol=tol, C=C, fit_intercept=fit_intercept, solver=solver)
         #! ----------------------------------------------------------------------
         X, y = gd.get_data(
             root_path=DATA_FOLDER)
@@ -110,7 +106,7 @@ def run(args):
         accuracy = accuracy_score(y_test, y_pred)
 
         # Log metrics inside your training loop
-        metrics = {'accuracy': accuracy}
+        metrics = {'accuracy': accuracy, 'loss': model.mlp.loss_}
         wandb.log(metrics)
 
     except TypeError as e:
