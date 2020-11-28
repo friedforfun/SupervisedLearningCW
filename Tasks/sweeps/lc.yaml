@@ -13,8 +13,8 @@ parameters:
   penalty:
     values: ['l1', 'l2', 'elasticnet', 'none']
   tol:
-    max: 1e-3
-    min: 1e-4
+    max: 0.0002
+    min: 0.0001
     distribution: int_uniform
   C:
     max: 1.2
