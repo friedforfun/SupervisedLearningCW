@@ -1,0 +1,34 @@
+program: /home/sam/Projects/SupervisedLearningCW/Tasks/sweeps/MLP.py
+entity: supervisedlearning
+project: J48-sweeps
+method: bayes
+metric:
+  goal: minimize
+  name: "loss"
+parameters:
+  criterion:
+    values: ['gini', 'entropy']
+  splitter: 
+    values: ['best', 'random']
+  max_depth:
+    max: 10
+    min: 1
+  min_samples_split:
+    max: 10
+    min: 2
+  min_samples_leaf:
+    max: 10
+    min: 1
+  max_features:
+    values: ['auto', 'sqrt', 'log2']
+
+
+
+
+
+  
+  
+  
+
+
+  
