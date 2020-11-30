@@ -14,6 +14,7 @@
 \usepackage{bookmark}
 \usepackage{array}
 \usepackage{multirow}
+\usepackage{rotating}
 
 \setlength{\parskip}{1em}
 \setlength{\parindent}{0pt}
@@ -44,9 +45,25 @@ Neural Nets)}
 
 \newpage
 \section{Variation in performance with varying learning parameters in Decision Trees}
+\subsection{J48}
+
+
+
+\newpage
+\subsection{Random Forest}
+
+
 
 \newpage
 \section{Variation in performance with varying learning parameters in Neural Networks}
+\subsection{Linear Classifier}
+
+
+
+\newpage
+\subsection{Multilayer Perceptron}
+
+
 
 \newpage
 \section{Variation in performance according to different metrics (TP Rate, FP Rate, Precision,
@@ -60,15 +77,39 @@ Recall, F Measure, ROC Area)}
 \begin{appendices}
 
 \section{Appendix A}
-\subsection{test}
+
+% =================== J48 Images here ===================
 
 
 
+% =================== Random Forest Images here ===================
+
+\newpage
+\begin{sidewaysfigure}[h!]
+    \caption {Accuracy vs Created - Random Forest} \label{AccVCreatedRF}
+    \centering
+    \includegraphics[width = \textwidth, height = \textwidth, keepaspectratio]{Images/RF Accur vs Created.png}
+\end{sidewaysfigure}
+
+\newpage
+\begin{sidewaysfigure}[h!]
+    \caption {Parameter Importance - Random Forest} \label{ParamImportanceRF}
+    \centering
+    \includegraphics[width = \textwidth, height = \textwidth, keepaspectratio]{Images/RF Parameter Importance.PNG}
+\end{sidewaysfigure}
+
+\newpage
+\begin{sidewaysfigure}[h!]
+    \caption {Random Forest Parameters} \label{ParallelCoordRF}
+    \centering
+    \includegraphics[width = \textwidth, height = \textwidth, keepaspectratio]{Images/RF ParallelCoordGraph.png}
+\end{sidewaysfigure}
+
+% =================== Linear Classifier Images here ===================
 
 
 
-
-
+% =================== Multilayer Perceptron Images here ===================
 \end{appendices}
 
 \end{document}
