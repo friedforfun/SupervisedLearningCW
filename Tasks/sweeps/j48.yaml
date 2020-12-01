@@ -11,25 +11,25 @@ parameters:
   splitter: 
     values: ['best', 'random']
   max_depth:
-    max: 10
-    min: 1
+    max: 1000
+    min: 50
   min_samples_split:
     max: 10
     min: 2
   min_samples_leaf:
     max: 10
     min: 1
-  min_weight_fraction_leaffloat:
-    max: 10.0
+  min_weight_fraction_leaf:
+    max: 0.5
     min: 0.0
   max_features:
     values: ['auto', 'sqrt', 'log2']
-  random_state:
-    max: 99999
-    min: 0
-  max_leaf_nodes: 
-    max: 10
-    min: 1
+#  random_state:
+#    max: 99999
+#    min: 0
+#  max_leaf_nodes: 
+#    max: 10
+#    min: 1
   min_impurity_decrease:
     max: 10.0
     min: 0.0

@@ -3,15 +3,15 @@ entity: supervisedlearning
 project: LC-sweeps
 method: bayes
 metric:
-  goal: minimize
-  name: "loss"
+  goal: maximize
+  name: "accuracy"
 parameters:
   max_iter:
-    max: 600
-    min: 150
+    max: 800
+    min: 200
     distribution: int_uniform
   penalty:
-    values: ['l1', 'l2', 'elasticnet', 'none']
+    values: ['l2', 'none']
   tol:
     max: 1e-3
     min: 1e-4

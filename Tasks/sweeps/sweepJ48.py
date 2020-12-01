@@ -44,8 +44,8 @@ def parse_args():
                         help='min no of samples to split internal node', dest='min_samples_split', type=int)
     parser.add_argument('-msl', '--min_samples_leaf', nargs=1,
                         help='The minimum number of samples required to be at a leaf node', dest='min_samples_leaf', type=int)
-    parser.add_argument('-mwfl', '--min_weight_fraction_leaffloat', nargs=1,
-                        help='minimum weighted fraction of the sum total of weights required to be at a leaf node', dest='min_weight_fraction_leaffloat', type=float)
+    parser.add_argument('-mwfl', '--min_weight_fraction_leaf', nargs=1,
+                        help='minimum weighted fraction of the sum total of weights required to be at a leaf node', dest='min_weight_fraction_leaf', type=float)
     parser.add_argument('-mf', '--max_features', nargs=1,
                         help='considered no of features before split', dest='max_features', type=str)     
     parser.add_argument('-rs', '--random_state', nargs=1,
@@ -78,10 +78,10 @@ hyperparam_defaults = {
     'max_depth': 1,
     'min_samples_split' : 2,
     'min_samples_leaf' : 1,
-    'min_weight_fraction_leaffloat': 0.0,
+    'min_weight_fraction_leaf': 0.0,
     'max_features' : 'auto',
     'random_state': 1,
-    'max_leaf_nodes': 1,
+    'max_leaf_nodes': None,
     'min_impurity_decrease': 0.0
     
 }
@@ -106,17 +106,17 @@ def run(args):
         max_depth = args.max_depth[0]
         min_samples_split = args.min_samples_split[0]
         min_samples_leaf = args.min_samples_leaf[0]
-        min_weight_fraction_leaffloat = args.min_weight_fraction_leaffloat[0]
+        min_weight_fraction_leaf = args.min_weight_fraction_leaf[0]
         max_features = args.max_features[0]
-        random_state = args.random_state[0]
-        max_leaf_nodes = args.max_leaf_nodes[0]
+        random_state = 1
+        max_leaf_nodes = None
         min_impurity_decrease = args.min_impurity_decrease[0]
         
         # pass arg into classifer
         #! Assign your classifer to the var `model`
         model = J48(
             criterion=criterion, splitter=splitter, max_depth=max_depth, min_samples_split=min_samples_split,min_samples_leaf=min_samples_leaf,
-            min_weight_fraction_leaffloat=min_weight_fraction_leaffloat, max_features=max_features, random_state=random_state, max_leaf_nodes=max_leaf_nodes,
+            min_weight_fraction_leaf=min_weight_fraction_leaf, max_features=max_features, random_state=random_state, max_leaf_nodes=max_leaf_nodes,
             min_impurity_decrease=min_impurity_decrease)
         #! ----------------------------------------------------------------------
         X, y = gd.get_data(

@@ -6,7 +6,7 @@ import graphviz
 class RandomForest(Classifier):
     """A Random Forest with an interface used for running experiments
     """
-    def __init__(self,**kwargs):
+    def __init__(self, **kwargs):
         self.hyper_params = kwargs
         self.rf = RandomForestClassifier(**kwargs)
     

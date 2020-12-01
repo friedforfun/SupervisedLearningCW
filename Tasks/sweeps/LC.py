@@ -100,7 +100,7 @@ def run(args):
         X, y = gd.balance_by_class(X, y, random_state=0)
 
         X = X.to_numpy()
-        y = y.to_numpy(dtype='int64')
+        y = y.to_numpy(dtype='int64').flatten()
         X_train, X_test, y_train, y_test = train_test_split(
             X, y, random_state=0, test_size=0.33)
 

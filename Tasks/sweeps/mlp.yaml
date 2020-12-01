@@ -3,8 +3,8 @@ entity: supervisedlearning
 project: MLP-sweeps
 method: bayes
 metric:
-  goal: minimize
-  name: "loss"
+  goal: maximize
+  name: "accuracy"
 parameters:
   hidden_layer_sizes:
     max: 500
