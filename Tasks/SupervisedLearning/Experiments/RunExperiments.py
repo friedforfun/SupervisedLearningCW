@@ -114,7 +114,8 @@ def run_KFold_experiment(classifier, X, y, classifier_name='', classes_desc='all
             test_scores[i] = classifier.run_classifier(X_test, y_test)
             wandb.sklearn.plot_classifier(classifier.get_classifier(), 
                 X_train, X_test, y_train, y_test, y_pred, y_probs, labels=class_labels, model_name=classifier_name)
-            wandb.log({'Accuracy': accuracy_score(y_test, y_pred)})
+            wandb.log({'Accuracy': accuracy_score(
+                y_test, y_pred), 'Label_class': classes_desc})
             #wandb.sklearn.plot_confusion_matrix(y_test, y_pred, class_labels)
 
     return train_scores, test_scores
