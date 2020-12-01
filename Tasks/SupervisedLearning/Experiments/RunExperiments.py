@@ -1,3 +1,5 @@
+import pandas
+from SupervisedLearning.Experiments.GetData import append_result_col, get_data
 from sklearn.model_selection import KFold, StratifiedKFold
 import wandb
 from . import GetData as gd
@@ -19,15 +21,37 @@ label_dict = {
 g_labels = [label_dict.get(i) for i in range(-1, 10)]
 binary_labels = ['yes', 'no']
 
-def run_all_experiments(classifier, project_name='Supervised Learning'):
-    # These experiments for each classifier:
-    # all training sets
-    # a new set with 4000 instances of the training set moved into the test set
-    # a new  set with 9000 instances of the training set moved into the test set
-    raise NotImplementedError
+def run_all_KF_experiments(classifier, classifier_name='', experiment_range=(0, 11), experiment_name='All kf experiments'):
+    """Run 10 K-fold for each data label
+
+    :param classifier: A configured instance of a classifier inheriting from Classifier interface.
+    :type classifier: a subclass of Classifier.
+    :param classifier_name: The name of the classifier. Defaults to ''.
+    :type classifier_name: str
+    :param experiment_range: The range of experiments to run. Defaults to (0, 11).
+    :type experiment_range:  (tuple, optional)
+
+    :return: List of dictionaries with each k-fold scores
+    :rtype: list
+    """
+    train_scores = []
+    test_scores = []
+
+    for i in range(experiment_range[0], experiment_range[1]):
+        class_title = label_dict[i-1]
+        X_train, y_train = get_data(i-1)
+        if i == 0:
+            class_labels = g_labels[1:]
+        else:
+            class_labels = binary_labels
+        train_s, test_s = run_KFold_experiment(classifier, X_train, y_train, classifier_name=classifier_name, classes_desc=class_title, class_labels=class_labels, stratified=True, custom_name=experiment_name)
+        train_scores.append(train_s)
+        test_scores.append(test_s)
+
+    return train_scores, test_scores
 
 
-def run_KFold_experiment(classifier, X, y, classifier_name='', classes_desc='all-classes', class_labels=g_labels, stratified=False, balance_classes=False, n_splits=10, random_state=0, **kwargs):
+def run_KFold_experiment(classifier, X, y, classifier_name='', classes_desc='all-classes', class_labels=g_labels, stratified=False, balance_classes=False, n_splits=10, random_state=0, custom_name=None, **kwargs):
     """Run 1 experiment with K-fold cross validation
 
     :param classifier: A configured instance of a classifier inheriting from Classifier interface
@@ -53,8 +77,11 @@ def run_KFold_experiment(classifier, X, y, classifier_name='', classes_desc='all
     :return: Tuple of dicts showing scores for each fold
     :rtype: Tuple(dict, dict)
     """
-    
-    Experiment_name = 'SL-KFolds_{}_classifer-{}_stratified-{}'.format(classes_desc, classifier_name, stratified)
+    if custom_name is None:
+        Experiment_name = 'SL-KFolds_{}_classifer-{}_stratified-{}'.format(classes_desc, classifier_name, stratified)
+    else:
+        Experiment_name = custom_name
+
     hyperparam_dict = classifier.get_params()
     # Run classifiers using 10-fold cross validation for various learning parameters on the training sets
     if balance_classes:
@@ -86,7 +113,32 @@ def run_KFold_experiment(classifier, X, y, classifier_name='', classes_desc='all
             test_scores[i] = classifier.run_classifier(X_test, y_test)
             wandb.sklearn.plot_classifier(classifier.get_classifier(), 
                 X_train, X_test, y_train, y_test, y_pred, y_probs, labels=class_labels, model_name=classifier_name)
-            
+            wandb.sklearn.plot_confusion_matrix(y_test, y_pred, class_labels)
+
+    return train_scores, test_scores
+
+
+def run_test_set_experiment(classifier, X_train, X_test, y_train, y_test, classifier_name='', classes_desc='all-classes', class_labels=g_labels):
+
+    Experiment_name = 'SL-Train_Test_{}_classifer-{}'.format(classes_desc, classifier_name)
+    hyperparam_dict = classifier.get_params()
+
+    with wandb.init(project=Experiment_name, entity='supervisedlearning', reinit=True, config=hyperparam_dict):
+        X_train = X_train.to_numpy()
+        y_train = y_train.to_numpy(dtype='int64')
+
+        X_test = X_test.to_numpy()
+        y_test = y_test.to_numpy(dtype='int64')
+
+        classifier.build_classifier(X_train, y_train)
+        y_pred = classifier.prediction(X_test)
+        y_probs = classifier.prediction_proba(X_test)
+        train_scores = classifier.run_classifier(X_train, y_train)
+        test_scores = classifier.run_classifier(X_test, y_test)
+        wandb.sklearn.plot_classifier(classifier.get_classifier(),
+                                      X_train, X_test, y_train, y_test, y_pred, y_probs, labels=class_labels, model_name=classifier_name)
+        #wandb.sklearn.plot_confusion_matrix(y_test, y_pred, class_labels, format='')
+
     return train_scores, test_scores
 
 def calc_F_measure():
@@ -98,9 +150,33 @@ def calc_ROC_area():
 def visualise():
     raise NotImplementedError
 
-def new_test_set(training, testing, num_instances=4000):
-    # move 4000 random from training to testing
-    rows_to_move = training.sample(n=num_instances)
+
+def new_test_set(training, testing, num_instances=4000, random_state=0):
+    """Create a new test set by taking num_instances from the training set and placing it in the test set.
+
+    Args:
+        training (tuple(pandas.DataFrame, pandas.DataFrame)): The training data and corresponding labels
+        testing (tuple(pandas.DataFrame, pandas.DataFrame)): The testing data and corresponding labels
+        num_instances (int, optional): The number of instances to move from train to test. Defaults to 4000.
+        random_state (int, optional): A random state for replicability. Defaults to 0.
+
+    Returns:
+        tuple(pandas.DataFrame, pandas.DataFrame, pandas.DataFrame, pandas.DataFrame): Training and testing data as: X_train, X_test, y_train, y_test
+    """
+    train_with_labels = append_result_col(*training)
+    test_with_labels = append_result_col(*testing)
+
+    sample = train_with_labels.sample(n=num_instances, random_state=random_state)
+    # all indices from sample as list
+    sample_indices = list(sample.index)
+    train_with_labels = train_with_labels.drop(index=sample_indices)
     
-    return testing.append(rows_to_move, ignore_index=True)
+    test_with_labels = test_with_labels.append(sample)
+
+    y_test = train_with_labels[['y']]
+    y_train = test_with_labels[['y']]
+    X_test = test_with_labels.drop('y', 1)
+    X_train = train_with_labels.drop('y', 1)
+
+    return X_test, X_train, y_train, y_test
 
