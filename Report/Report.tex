@@ -15,6 +15,7 @@
 \usepackage{array}
 \usepackage{multirow}
 \usepackage{rotating}
+\usepackage{placeins}
 
 \setlength{\parskip}{1em}
 \setlength{\parindent}{0pt}
@@ -40,7 +41,7 @@
 \section{Variation in performance with size of the training and testing sets}
 
 \newpage
-\section{Variation in performance with change in the learning paradigm (Decision Trees versus
+\section{Variation in performance with the change in the learning paradigm (Decision Trees versus
 Neural Nets)}
 
 \newpage
@@ -53,18 +54,20 @@ Neural Nets)}
 \newpage
 \subsection{Random Forest}
 
-"max\_features" has the options "auto", "sqrt" and "log2". From (Figure \ref{AccOverTimeRF}) we can see that "sqrt" has a higher accuracy overall, the accuracy of "log2" varies between the lower end and the median accuracy value.
-\par
-“min\_samples\_split” has very little impact on accuracy.
-\par
-“criterion” gives a perfect negative correlation with respect to accuracy. Correlation values -  [Gini = -0.404 ], [Entropy = 0.404 ].
-\par
-“n\_estimators” which defines the number of trees in the forest seems to have very little correlation but high importance.
-\par
-“min\_samples\_leaf” gives a strong negative correlation in terms of accuracy, meaning the higher minimum samples at a leaf node, the lower the accuracy.
-\par
-“min\_weight\_fraction\_leaf” has a somewhat positive correlation.
+\begin{table}[ht]
+  \centering
+  \begin{tabular}{|p{0.25\linewidth} | p{0.7\linewidth}|} 
+    \hline
+    \textbf{Parameter}  & \textbf{Conclusion} \\ \hline
+    max\_features & Contains the options "auto", "sqrt" and "log2". From (Figure \ref{RFAccOverTime}) we can see that "sqrt" has a higher accuracy overall, the accuracy of "log2" varies between the lower end and the median accuracy value.\\ \hline
+    min\_samples\_split & The minimum samples required to split a node has very little impact on accuracy.  \\ \hline
+    criterion & Gives a perfect negative correlation with respect to accuracy. Correlation values being [Gini = -0.404 ], [Entropy = 0.404 ]. \\ \hline
+    n\_estimators & This is defined as the number of trees in the forest, it seems to have very little correlation but high importance. \\ \hline
+    min\_samples\_leaf & Gives a strong negative correlation in terms of accuracy, meaning the higher minimum samples at a leaf node, the lower the accuracy. \\ \hline
+    min\_weight\_fraction\_leaf & Has a somewhat positive correlation to accuracy. e.g. total weight required at a leaf node varies between 76\% and 89\% accuracy\\ \hline
 
+  \end{tabular}
+\end{table}\label{RF_Analysis_Table}
 
 
 \newpage
@@ -76,7 +79,19 @@ Neural Nets)}
 \newpage
 \subsection{Multilayer Perceptron}
 
-
+\begin{table}[ht]
+  \centering
+  \begin{tabular}{|p{0.25\linewidth} | p{0.7\linewidth}|} 
+    \hline
+    \textbf{Parameter}  & \textbf{Conclusion} \\ \hline
+    alpha & This has a positive correlation to accuracy as higher alpha value equates to higher accuracy. \\ \hline 
+    solver & lbfgs is the most accurate value of this parameter with a strong positive correlation out of the three (lbfgs, adam, sgd). \\ \hline
+    max\_iter & The maximum number of iterations - In general, higher accuracy can be achieved with a larger amount of max iterations. \\ \hline
+    activation & Out of the four activation functions (relu, tanh, identity and logistic), relu is the only one with a positive correlation, giving the highest accuracy overall. \\ \hline  
+    learning\_rate & 'adaptive' achieves the highest accuracy while, 'constant' and 'invscaling' vary widely. \\ \hline  
+    hidden\_layer\_sizes & Has a negative correlation - the number neurons in the n-th hidden layer has no effect on accuracy. \\ \hline
+  \end{tabular}
+\end{table}\label{MLP_Analysis_Table}
 
 \newpage
 \section{Variation in performance according to different metrics (TP Rate, FP Rate, Precision,
@@ -97,7 +112,7 @@ Recall, F Measure, ROC Area)}
   
   \begin{table}[ht]
     \centering
-    \begin{tabular}{|p{0.2\linewidth} | p{0.8\linewidth}|} 
+    \begin{tabular}{|p{0.25\linewidth} | p{0.8\linewidth}|} 
       \hline
       \textbf{Team member}  & \textbf{Involvement} \\ \hline
       Lewis Wilson & text here \\ \hline
@@ -110,29 +125,18 @@ Recall, F Measure, ROC Area)}
 As a team we are happy with everyone's contributions to the project. All team members were punctual and showed up to all scheduled meetings. Sam took the lead as project manager throughout the project delegating the workload and providing support to others.
 
 
-
-
-
-
 % =================== J48 here ===================
+\newpage
+\section{J48}
 
 
 
+
+
+\FloatBarrier
 % =================== Random Forest here ===================
-
 \newpage
-\begin{sidewaysfigure}[h!]
-    \caption {Accuracy over time - Random Forest} \label{AccOverTimeRF}
-    \centering
-    \includegraphics[width = \textwidth, height = \textwidth, keepaspectratio]{Images/RF Acc over time.png}
-\end{sidewaysfigure}
-
-\newpage
-\begin{sidewaysfigure}[h!]
-    \caption {Random Forest Parameters} \label{ParallelCoordRF}
-    \centering
-    \includegraphics[width = \textwidth, height = \textwidth, keepaspectratio]{Images/RF ParallelCoordGraph.png}
-\end{sidewaysfigure}
+\section{Random Forest}
 
 \subsection{Random Forest Parameter Importance}
   \begin{table}[ht]
@@ -140,30 +144,95 @@ As a team we are happy with everyone's contributions to the project. All team me
     \begin{tabular}{|p{0.3\linewidth} | p{0.3\linewidth}| p{0.3\linewidth}|} 
       \hline
       \textbf{Parameter Config}  & \textbf{Importance} & \textbf{Correlation} \\ \hline
-        min\_samples\_split & 0.05 & 0.306 \\ \hline
+        min\_samples\_split & 0.005 & 0.306 \\ \hline
         min\_samples\_leaf & 0.375 & -0.725 \\ \hline
-        n\_estimators & 0.015 & 0.092 \\ \hline
-        min\_weight\_fraction\_leaf & 0.014 & 0.123 \\ \hline
+        n\_estimators & 0.016 & 0.092 \\ \hline
+        min\_weight\_fraction\_leaf & 0.013 & 0.123 \\ \hline
     \end{tabular}
-  \end{table}\label{RF_ParamImp}
+  \end{table}\label{RF_ParamImp1}
 
   \begin{table}[ht]
     \centering
     \begin{tabular}{|p{0.3\linewidth} | p{0.3\linewidth}| p{0.3\linewidth}|} 
       \hline
       \textbf{Parameter Config}  & \textbf{Importance} & \textbf{Correlation} \\ \hline
-      max\_features.value\_sqrt & 0.010 & 0.563 \\ \hline
-      max\_features.value\_log2 & 0.959 & -0.752 \\ \hline
-      criterion.value\_entropy & 0.456 & 0.404 \\ \hline
-      criterion.value\_gini & 0.544 & -0.404 \\ \hline
+      max\_features.value\_sqrt & 0.001 & 0.563 \\ \hline
+      max\_features.value\_log2 & 0.565 & -0.752 \\ \hline
+      criterion.value\_entropy & 0.012 & 0.404 \\ \hline
+      criterion.value\_gini & 0.012 & -0.404 \\ \hline
     \end{tabular}
-  \end{table}\label{RF_ParamImp}
+  \end{table}\label{RF_ParamImp2}
+
+\begin{sidewaysfigure}[h]
+    \caption {Accuracy over time - Random Forest} \label{RFAccOverTime}
+    \centering
+    \includegraphics[width = \textwidth, height = \textwidth, keepaspectratio]{Images/RF Acc over time.png}
+\end{sidewaysfigure}
+
+\begin{sidewaysfigure}[h]
+    \caption {Random Forest Parameters} \label{ParallelCoordRF}
+    \centering 
+    \includegraphics[width = \textwidth, height = \textwidth, keepaspectratio]{Images/RF ParallelCoordGraph.png}
+\end{sidewaysfigure}
+
+
   
+  \FloatBarrier
 % =================== Linear Classifier here ===================
+\newpage
+\section{Linear Classifier}
 
 
-
+\FloatBarrier
 % =================== Multilayer Perceptron here ===================
+\newpage
+\section{Multilayer Perceptron}
+
+\subsection{Multilayer Perceptron Parameter Importance}
+  \begin{table}[ht]
+    \centering
+    \begin{tabular}{|p{0.3\linewidth} | p{0.3\linewidth}| p{0.3\linewidth}|} 
+      \hline
+      \textbf{Parameter Config}  & \textbf{Importance} & \textbf{Correlation} \\ \hline
+        hidden\_layer\_sizes & 0.095 & -0.101 \\ \hline
+        max\_iter & 0.091 & 0.072 \\ \hline
+        alpha & 0.061 & 0.171 \\ \hline
+    \end{tabular}
+  \end{table}\label{MLP_ParamImp1}
+
+  
+  \begin{table}[ht]
+    \centering
+    \begin{tabular}{|p{0.3\linewidth} | p{0.3\linewidth}| p{0.3\linewidth}|} 
+      \hline
+      \textbf{Parameter Config}  & \textbf{Importance} & \textbf{Correlation} \\ \hline
+        solver.value\_lbfgs & 0.530 & 0.728 \\ \hline
+        solver.value\_adam & 0.027 & -0.245 \\ \hline
+        solver.value\_sgd & 0.024 & -0.640 \\ \hline
+        activation.value\_identity & 0.098 & -0.169 \\ \hline
+        activation.value\_relu & 0.033 & 0.301 \\ \hline
+        activation.value\_tanh & 0.018 & -0.035 \\ \hline
+        activation.value\_logistic & 0.006 & -0.270 \\ \hline
+        learning\_rate.value\_adaptive & 0.012 & 0.507 \\ \hline
+        learning\_rate.value\_constant & 0.004 & -0.442 \\ \hline
+        learning\_rate.value\_invscaling & 0.001 & -0.224 \\ \hline
+    \end{tabular}
+  \end{table}\label{MLP_ParamImp2}
+
+\begin{sidewaysfigure}[h!]
+    \caption {Accuracy over time - Multilayer Perceptron} \label{MLPAccOverTime}
+    \centering
+    \includegraphics[width = \textwidth, height = \textwidth, keepaspectratio]{Images/MLP Acc over time.png}
+\end{sidewaysfigure}
+
+\begin{sidewaysfigure}[h]
+  \caption {Multilayer Perceptron Parameters} \label{ParallelCoordMLP}
+  \centering 
+  \includegraphics[width = \textwidth, height = \textwidth, keepaspectratio]{Images/MLP ParallelCoordGraph.png}
+\end{sidewaysfigure}
+
+\FloatBarrier
+% =================== END APPENDIX ===================
 \end{appendices}
 
 \end{document}
