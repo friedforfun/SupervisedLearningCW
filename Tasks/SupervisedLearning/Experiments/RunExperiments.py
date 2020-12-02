@@ -114,16 +114,39 @@ def run_KFold_experiment(classifier, X, y, classifier_name='', classes_desc='all
             test_scores[i] = classifier.run_classifier(X_test, y_test)
             wandb.sklearn.plot_classifier(classifier.get_classifier(), 
                 X_train, X_test, y_train, y_test, y_pred, y_probs, labels=class_labels, model_name=classifier_name)
-            wandb.log({'Accuracy': accuracy_score(
-                y_test, y_pred), 'Label_class': classes_desc})
+            wandb.log({'Accuracy': accuracy_score(y_test, y_pred), 'Label_class': classes_desc})
             #wandb.sklearn.plot_confusion_matrix(y_test, y_pred, class_labels)
 
     return train_scores, test_scores
 
 
-def run_test_set_experiment(classifier, X_train, X_test, y_train, y_test, classifier_name='', classes_desc='all-classes', class_labels=g_labels):
+def run_all_test_set_experiments(classifier, classifier_name = '', experiment_range = (0, 11), experiment_name = 'All test set experiments'):
 
-    Experiment_name = 'SL-Train_Test_{}_classifer-{}'.format(classes_desc, classifier_name)
+    train_scores = []
+    test_scores = []
+
+    for i in range(experiment_range[0], experiment_range[1]):
+        class_title = label_dict[i-1]
+        X_train, y_train = get_data(i-1)
+        X_test, y_test = get_data(i-1, train=False)
+        if i == 0:
+            class_labels = g_labels[1:]
+        else:
+            class_labels = binary_labels
+        train_s, test_s = run_test_set_experiment(classifier, X_train, X_test, y_train, y_test, classifier_name=classifier_name,
+                                                  classes_desc=class_title, class_labels=class_labels, custom_name=experiment_name)
+        train_scores.append(train_s)
+        test_scores.append(test_s)
+
+    return train_scores, test_scores
+
+
+def run_test_set_experiment(classifier, X_train, X_test, y_train, y_test, classifier_name='', classes_desc='all-classes', class_labels=g_labels, custom_name=None):
+    if custom_name is None:
+        Experiment_name = 'SL-Train_Test_{}_classifer-{}'.format(classes_desc, classifier_name)
+    else:
+        Experiment_name = custom_name
+
     hyperparam_dict = classifier.get_params()
 
     with wandb.init(project=Experiment_name, entity='supervisedlearning', reinit=True, config=hyperparam_dict):
@@ -140,7 +163,8 @@ def run_test_set_experiment(classifier, X_train, X_test, y_train, y_test, classi
         test_scores = classifier.run_classifier(X_test, y_test)
         wandb.sklearn.plot_classifier(classifier.get_classifier(),
                                       X_train, X_test, y_train, y_test, y_pred, y_probs, labels=class_labels, model_name=classifier_name)
-        #wandb.sklearn.plot_confusion_matrix(y_test, y_pred, class_labels, format='')
+        wandb.log({'Accuracy': accuracy_score(
+            y_test, y_pred), 'Label_class': classes_desc})
 
     return train_scores, test_scores
 
