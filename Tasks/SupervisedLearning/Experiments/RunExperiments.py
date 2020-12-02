@@ -120,7 +120,7 @@ def run_KFold_experiment(classifier, X, y, classifier_name='', classes_desc='all
     return train_scores, test_scores
 
 
-def run_all_test_set_experiments(classifier, classifier_name = '', experiment_range = (0, 11), experiment_name = 'All test set experiments'):
+def run_all_test_set_experiments(classifier, classifier_name = '', experiment_range = (0, 11), experiment_name = 'All test set experiments', train_data_in_test=False, num_instances=4000):
 
     train_scores = []
     test_scores = []
@@ -129,6 +129,8 @@ def run_all_test_set_experiments(classifier, classifier_name = '', experiment_ra
         class_title = label_dict[i-1]
         X_train, y_train = get_data(i-1)
         X_test, y_test = get_data(i-1, train=False)
+        if train_data_in_test:
+            X_train, X_test, y_train, y_test = new_test_set((X_train, y_train), (X_test, y_test), num_instances=num_instances)
         if i == 0:
             class_labels = g_labels[1:]
         else:
