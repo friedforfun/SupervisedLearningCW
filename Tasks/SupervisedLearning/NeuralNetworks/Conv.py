@@ -27,7 +27,7 @@ def merge_dict(own: dict, other: dict) -> dict:
 
 
 class ConvolutionalNeuralNetwork(Classifier):
-    def __init__(self, num_classes, epochs=50, use_gpu=True, **kwargs):
+    def __init__(self, num_classes, epochs=50, use_gpu=True, augmented=False):
         if use_gpu:
             self.gpus = tf.config.experimental.list_physical_devices('GPU')
             if self.gpus:
@@ -40,10 +40,12 @@ class ConvolutionalNeuralNetwork(Classifier):
         self.params = {
             'num_classes': num_classes,
             'epochs': epochs,
+            'augmented': augmented
         }
 
-        if kwargs:
-            self.params = merge_dict(self.params, kwargs)
+        self.augmented = augmented
+        # if kwargs:
+        #     self.params = merge_dict(self.params, kwargs)
 
         self.epochs = epochs
         self.num_classes = num_classes
@@ -62,6 +64,7 @@ class ConvolutionalNeuralNetwork(Classifier):
         self.model.add(BatchNormalization())
         self.model.add(MaxPool2D((2, 2), strides=2, padding='same'))
         self.model.add(Flatten())
+        self.model.add(Dense(units=512, activation='relu'))
         self.model.add(Dense(units=512, activation='relu'))
         self.model.add(Dropout(0.3))
         self.model.add(Dense(units=self.num_classes, activation='softmax'))
@@ -110,6 +113,27 @@ class ConvolutionalNeuralNetwork(Classifier):
                            callbacks=[self.wandb_callback()])
         
 
+    def conventional_training(self, X_train, y_train, X_test, y_test):
+
+        X_train = self.preprocess_images(X_train)
+        X_test = self.preprocess_images(X_test)
+
+        y_test = self.y_to_binary(y_test)
+        y_train = self.y_to_binary(y_train)
+
+        if self.wandb_callback is None:
+            self.model.fit(X_train, y_train,
+                           epochs=self.epochs,
+                           verbose=1,
+                           validation_data=(X_test, y_test))
+        else:
+            self.model.fit(X_train, y_train,
+                           epochs=self.epochs,
+                           verbose=1,
+                           validation_data=(X_test, y_test),
+                           callbacks=[self.wandb_callback()])
+
+
     def preprocess_images(self, image_matrix):
         image_matrix = image_matrix.reshape(-1, 48, 48, 1)
         return image_matrix
@@ -146,28 +170,11 @@ class ConvolutionalNeuralNetwork(Classifier):
         :type y: numpy.array
         """
 
-        X_train = self.preprocess_images(X)
-
-        if validation_data[0] is not None and validation_data[1] is not None:
-            X_test = self.preprocess_images(validation_data[0])
-            y_test = self.y_to_binary(validation_data[1])
+        if self.augmented:
+            self.augmented_training(X, y, *validation_data)
+        
         else:
-            raise ValueError('Validation data must be provided for a CNN')
-
-        y_train = self.y_to_binary(y)
-
-        if self.wandb_callback is None:
-            self.model.fit(X_train, y_train,
-                        epochs=self.epochs,
-                        verbose=1,
-                        validation_data=(X_test, y_test))
-        else:
-            self.model.fit(X_train, y_train,
-                           epochs=self.epochs,
-                           verbose=1,
-                           validation_data=(X_test, y_test), 
-                           callbacks=[self.wandb_callback()])
-
+            self.conventional_training(X, y, *validation_data)
 
     def get_classifier(self):
         """A method to return the classifier object
