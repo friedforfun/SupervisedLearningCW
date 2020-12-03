@@ -199,13 +199,14 @@ def new_test_set(training, testing, num_instances=4000, random_state=0):
     # all indices from sample as list
     sample_indices = list(sample.index)
     train_with_labels = train_with_labels.drop(index=sample_indices)
-    
+
     test_with_labels = test_with_labels.append(sample)
 
-    y_test = train_with_labels[['y']]
-    y_train = test_with_labels[['y']]
+
+    y_test = test_with_labels[['y']]
+    y_train = train_with_labels[['y']]
     X_test = test_with_labels.drop('y', 1)
     X_train = train_with_labels.drop('y', 1)
 
-    return X_test, X_train, y_train, y_test
+    return X_train, X_test, y_train, y_test
 
