@@ -22,7 +22,7 @@ class Classifier(ABC):
         return confusion_matrix(true_label, pred_label)
 
     @abstractmethod
-    def build_classifier(self, X, y):
+    def build_classifier(self, X, y, validation_data=(None, None)):
         """Abstract method to use to fit the classifier to X and y
 
         :param X: X data
