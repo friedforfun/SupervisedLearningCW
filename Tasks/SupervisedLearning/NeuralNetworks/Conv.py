@@ -78,7 +78,7 @@ class ConvolutionalNeuralNetwork(Classifier):
             horizontal_flip=False,  # randomly flip images horizontally
             vertical_flip=False)  # Don't randomly flip images vertically
 
-    def augmented_training(self, X_train, y_train, X_test, y_test):
+    def augmented_training(self, X_train, y_train, X_test, y_test, batch_size=128):
         """To reduce overfitting we use an image data generator
 
         Args:
@@ -96,16 +96,16 @@ class ConvolutionalNeuralNetwork(Classifier):
         self.datagen.fit(X_train)
 
         if self.wandb_callback is None:
-            self.model.fit(self.datagen.flow(X_train, y_train, batch_size=64),  # Default batch_size is 32. We set it here for clarity.
-                        epochs=20,
+            self.model.fit(self.datagen.flow(X_train, y_train, batch_size=batch_size),  # Default batch_size is 32. We set it here for clarity.
+                           epochs=self.epochs,
                         # Run same number of steps we would if we were not using a generator.
-                        steps_per_epoch=len(X_train)/64,
+                           steps_per_epoch=len(X_train)/batch_size,
                         validation_data=(X_test, y_test))
         else:
-            self.model.fit(self.datagen.flow(X_train, y_train, batch_size=64),  # Default batch_size is 32. We set it here for clarity.
-                           epochs=20,
+            self.model.fit(self.datagen.flow(X_train, y_train, batch_size=batch_size),  # Default batch_size is 32. We set it here for clarity.
+                           epochs=self.epochs,
                            # Run same number of steps we would if we were not using a generator.
-                           steps_per_epoch=len(X_train)/64,
+                           steps_per_epoch=len(X_train)/batch_size,
                            validation_data=(X_test, y_test),
                            callbacks=[self.wandb_callback()])
         
