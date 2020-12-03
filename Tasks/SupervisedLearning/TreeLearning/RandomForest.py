@@ -26,7 +26,7 @@ class RandomForest(Classifier):
             y_pred = self.rf.predict(X)
             return confusion_matrix(y, y_pred)
 
-    def build_classifier(self,X,y):
+    def build_classifier(self,X,y, validation_data=(None, None)):
         """Fit the classifier to the provided data
         
         :param X: X data
