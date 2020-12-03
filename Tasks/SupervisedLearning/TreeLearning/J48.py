@@ -15,7 +15,7 @@ class J48(Classifier):
         self.hyper_params = kwargs
         self.j48 = j48.DecisionTreeClassifier(**kwargs)
 
-    def build_classifier(self,X,y):
+    def build_classifier(self,X,y, validation_data=(None, None)):
         """Fit the classifier to the provided data
 
         :param X: X data
