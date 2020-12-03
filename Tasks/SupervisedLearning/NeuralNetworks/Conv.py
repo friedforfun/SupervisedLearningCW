@@ -72,6 +72,8 @@ class ConvolutionalNeuralNetwork(Classifier):
     def y_to_binary(self, y):
         return keras.utils.to_categorical(y, self.num_classes)
 
+    def set_wandb_callback(self, callback):
+        self.wandb_callback = callback
 
     def run_classifier(self, X, y):
         """Abstract class to use for running experiments
@@ -101,18 +103,19 @@ class ConvolutionalNeuralNetwork(Classifier):
 
         X_train = self.preprocess_images(X)
 
-        if validation_data[0] is not None:
+        if validation_data[0] is not None and validation_data[1] is not None:
             X_test = self.preprocess_images(validation_data[0])
+            y_test = self.y_to_binary(validation_data[1])
         else:
             raise ValueError('Validation data must be provided for a CNN')
 
         y_train = self.y_to_binary(y)
-        y_test = self.y_to_binary(validation_data[1])
+
         
         self.model.fit(X_train, y_train,
                   epochs=self.epochs,
                   verbose=1,
-                       validation_data=(X_test, y_test))
+                       validation_data=(X_test, y_test), callbacks=[self.wandb_callback()])
 
 
     def get_classifier(self):
