@@ -23,7 +23,7 @@ class MultiLayerPerceptron(Classifier):
     def get_params(self):
         return self.hyper_params
     
-    def build_classifier(self, X, y):
+    def build_classifier(self, X, y, validation_data=(None, None)):
         """Fit the classifier to the provided data
 
         :param X: X data

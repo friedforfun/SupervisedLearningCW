@@ -5,7 +5,7 @@ import math
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
-from tensorflow.keras.applications.vgg16 import preprocess_input
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Conv2D, MaxPool2D, Flatten, Dropout, BatchNormalization
@@ -24,6 +24,7 @@ def merge_dict(own: dict, other: dict) -> dict:
         else:
             raise ValueError('Conflicting kwargs')
     return own
+
 
 class ConvolutionalNeuralNetwork(Classifier):
     def __init__(self, num_classes, epochs=50, use_gpu=True, **kwargs):
@@ -47,6 +48,8 @@ class ConvolutionalNeuralNetwork(Classifier):
         self.epochs = epochs
         self.num_classes = num_classes
 
+        self.wandb_callback = None
+
         self.model = Sequential()
         self.model.add(Conv2D(75, (3, 3), strides=1, padding='same', activation='relu', input_shape=(48, 48, 1)))
         self.model.add(BatchNormalization())
@@ -64,6 +67,48 @@ class ConvolutionalNeuralNetwork(Classifier):
         self.model.add(Dense(units=self.num_classes, activation='softmax'))
         self.model.compile(loss='categorical_crossentropy', metrics=['accuracy'])
 
+        self.datagen = ImageDataGenerator(
+            # randomly rotate images in the range (degrees, 0 to 180)
+            rotation_range=10,
+            zoom_range=0.1,  # Randomly zoom image
+            # randomly shift images horizontally (fraction of total width)
+            width_shift_range=0.1,
+            # randomly shift images vertically (fraction of total height)
+            height_shift_range=0.1,
+            horizontal_flip=False,  # randomly flip images horizontally
+            vertical_flip=False)  # Don't randomly flip images vertically
+
+    def augmented_training(self, X_train, y_train, X_test, y_test):
+        """To reduce overfitting we use an image data generator
+
+        Args:
+            X_train (numpy.array): training data
+            X_test (numpy.array): testing data
+            y_train (numpy.array): training labels
+            y_test (numpy.array): testing labels
+        """
+        X_train = self.preprocess_images(X_train)
+        y_train = self.y_to_binary(y_train)
+
+        X_test = self.preprocess_images(X_test)
+        y_test = self.y_to_binary(y_test)
+
+        self.datagen.fit(X_train)
+
+        if self.wandb_callback is None:
+            self.model.fit(self.datagen.flow(X_train, y_train, batch_size=64),  # Default batch_size is 32. We set it here for clarity.
+                        epochs=20,
+                        # Run same number of steps we would if we were not using a generator.
+                        steps_per_epoch=len(X_train)/64,
+                        validation_data=(X_test, y_test))
+        else:
+            self.model.fit(self.datagen.flow(X_train, y_train, batch_size=64),  # Default batch_size is 32. We set it here for clarity.
+                           epochs=20,
+                           # Run same number of steps we would if we were not using a generator.
+                           steps_per_epoch=len(X_train)/64,
+                           validation_data=(X_test, y_test),
+                           callbacks=[self.wandb_callback()])
+        
 
     def preprocess_images(self, image_matrix):
         image_matrix = image_matrix.reshape(-1, 48, 48, 1)
@@ -111,11 +156,17 @@ class ConvolutionalNeuralNetwork(Classifier):
 
         y_train = self.y_to_binary(y)
 
-        
-        self.model.fit(X_train, y_train,
-                  epochs=self.epochs,
-                  verbose=1,
-                       validation_data=(X_test, y_test), callbacks=[self.wandb_callback()])
+        if self.wandb_callback is None:
+            self.model.fit(X_train, y_train,
+                        epochs=self.epochs,
+                        verbose=1,
+                        validation_data=(X_test, y_test))
+        else:
+            self.model.fit(X_train, y_train,
+                           epochs=self.epochs,
+                           verbose=1,
+                           validation_data=(X_test, y_test), 
+                           callbacks=[self.wandb_callback()])
 
 
     def get_classifier(self):
