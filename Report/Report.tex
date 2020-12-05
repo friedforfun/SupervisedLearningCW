@@ -43,6 +43,13 @@ For both decision trees and neural networks, we used Weights and Biases (\url{ht
 
 \newpage
 \section{Variation in performance with size of the training and testing sets}
+\subsection{Methodology}
+We used the same seed when moving the data from the training set to the testing set, so all experiments for a given classifier used the same training and testing data.
+\subsection{Turn left deep dive}
+The turn left dataset has an extremely small number of instances in its training dataset for 9000 moved to testing, Thus we would expect the worst prediction accuracy, in this case, the situation was so bad that our accuracy scores became misleading. Because the representation of ‘turn left’ was so poor in our dataset most of the classifiers simply predicted that there were no instances of turn left in the dataset and recorded a deceiving 97% accuracy (because 97% of the dataset is not in fact turn left). In fact this problem appeared for all binary classifications with the Random Forest classifier.
+The only classifiers that did not exhibit this behaviour were the Logistic Regression (LR) and Convolutional Neural Network classifiers (CNN). CNN scored a staggering 99.9% accuracy with the same minuscule training data, while LR managed 98.3% with 200 false negatives, 5 false positives and 60 true positives.
+\par
+\textcolor{red}{\huge {GET IMAGES FROM GOOGLE DOCS}}
 
 \newpage
 \section{Variation in performance with the change in the learning paradigm (Decision Trees versus
@@ -59,20 +66,20 @@ Neural Nets)}
 \textbf{min\_weight\_fraction\_leaf -} The minimum number of samples required to be at a leaf node. \\
 \textbf{criterion\_value -}[‘Gini’,’Entropy’]: Measures the quality of the split.
 \textbf{max\_features -} [‘auto’,’log2’,’sqrt’] : max features considers the number of features when looking for the best split. Auto just picks the best result so had the same result as log2. \\
-\textbf{Splitter -} [‘best’, ‘random’]: \\
+\textbf{Splitter -} [‘best’, ‘random’]: The strategy used to choose the split at each node. \\
 
 \begin{table}[ht]
   \centering
   \begin{tabular}{|p{0.25\linewidth} | p{0.15 \linewidth} | p{0.45\linewidth}|} 
     \hline
     \textbf{Parameter}  & \textbf{Type} &\textbf{Conclusion} \\ \hline
-    max\_depth & int & had low importance value of 0.012 and provided some correlation 0.084. \\ \hline
-    min\_impurity\_decrease & float & had a low importance value of 0.051 and a strong negative correlation of -0.241.  \\ \hline
-    min\_samples\_leaf & int or float & had low importance 0.014 and provided a tiny positive correlation of 0.007. \\ \hline
-    min\_weight\_fraction\_leaf & float & gives a strong negative correlation in terms of accuracy, meaning the higher the min\_weight\_fraction\_leaf value, the lower the accuracy.\\ \hline
-    criterion & string & Both provided a very low importance value of 0.003. Entropy had a very small negative correlation of -0.022 and Gini a positive correlation of 0.022. \\ \hline
-    max\_features & string & Log2 provided an importance of 0.133 and a high negative correlation of -0.372. Log2 provided a tiny importance of 0.003 but a relatively good correlation of 0.196. \\ \hline
-    splitter & string & ‘best’ and ‘random’ with best-having importance of 0.048 and random 0.044. Best has a positive correlation of 0.051 whereas random -0.051. \\ \hline
+    max\_depth & int & Provided low importance value of 0.012 and provided some correlation 0.084. \\ \hline
+    min\_impurity\_decrease & float & Small importance value of 0.051 and a strong negative correlation of -0.241.  \\ \hline
+    min\_samples\_leaf & int or float & Low importance of 0.014 and provided a tiny positive correlation of 0.007. \\ \hline
+    min\_weight\_fraction\_leaf & float & Gives a strong negative correlation in terms of accuracy, meaning the higher the min\_weight\_fraction\_leaf value, the lower the accuracy.\\ \hline
+    criterion & string & Both parameters provided a very low importance value of 0.003. Entropy had a tiny negative correlation of -0.022 and Gini a positive correlation of 0.022. \\ \hline
+    max\_features & string & Log2 provided an importance value of 0.133 and a high negative correlation of -0.372. Log2 provided tiny importance of 0.003 but a relatively good correlation of 0.196. \\ \hline
+    splitter & string & 'best' had an importance of 0.048 and random 0.044. 'best' has a positive correlation of 0.051 whereas random -0.051. \\ \hline
   \end{tabular}
 \end{table}\label{RF_Analysis_Table}
 
@@ -90,15 +97,15 @@ Neural Nets)}
 
 \begin{table}[ht]
   \centering
-  \begin{tabular}{|p{0.25\linewidth} | p{0.7\linewidth}|} 
+  \begin{tabular}{|p{0.25\linewidth} | p{0.15 \linewidth} | p{0.45\linewidth}|} 
     \hline
-    \textbf{Parameter}  & \textbf{Conclusion} \\ \hline
-    max\_features & Contains the options "auto", "sqrt" and "log2". From (Figure \ref{RFAccOverTime}) we can see that "sqrt" has a higher accuracy overall, the accuracy of "log2" varies between the lower end and the median accuracy value.\\ \hline
-    min\_samples\_split & The minimum samples required to split a node has very little impact on accuracy.  \\ \hline
-    criterion & Gives a perfect negative correlation with respect to accuracy. Correlation values being [Gini = -0.404 ], [Entropy = 0.404 ]. \\ \hline
-    n\_estimators & This is defined as the number of trees in the forest, it seems to have very little correlation but high importance. \\ \hline
-    min\_samples\_leaf & Gives a strong negative correlation in terms of accuracy, meaning the higher minimum samples at a leaf node, the lower the accuracy. \\ \hline
-    min\_weight\_fraction\_leaf & Has a somewhat positive correlation to accuracy. e.g. total weight required at a leaf node varies between 76\% and 89\% accuracy\\ \hline
+    \textbf{Parameter}  & \textbf{Type} & \textbf{Conclusion} \\ \hline
+    max\_features & string & Contains the options "auto", "sqrt" and "log2". From (Figure \ref{RFAccOverTime}) we can see that "sqrt" has a higher accuracy overall, the accuracy of "log2" varies between the lower end and the median accuracy value.\\ \hline
+    min\_samples\_split & int or float & The minimum samples required to split a node has very little impact on accuracy.  \\ \hline
+    criterion & string & Gives a perfect negative correlation with respect to accuracy. Correlation values being [Gini = -0.404 ], [Entropy = 0.404 ]. \\ \hline
+    n\_estimators & int & This is defined as the number of trees in the forest, it seems to have very little correlation but high importance. \\ \hline
+    min\_samples\_leaf & int or float & Gives a strong negative correlation in terms of accuracy, meaning the higher minimum samples at a leaf node, the lower the accuracy. \\ \hline
+    min\_weight\_fraction\_leaf & float & Has a somewhat positive correlation to accuracy. e.g. total weight required at a leaf node varies between 76\% and 89\% accuracy\\ \hline
   \end{tabular}
 \end{table}\label{RF_Analysis_Table}
 See Parameter Importance (Figure \ref{RF_ParamImp1})
@@ -120,14 +127,14 @@ Additionally ‘sag’ and ‘saga’ guarantee fast convergence on features wit
 
 \begin{table}[ht]
   \centering
-  \begin{tabular}{|p{0.25\linewidth} | p{0.7\linewidth}|} 
+  \begin{tabular}{|p{0.25\linewidth} | p{0.15 \linewidth} | p{0.45\linewidth}|} 
     \hline
-    \textbf{Parameter}  & \textbf{Conclusion} \\ \hline
-    C & The smaller this value is the stronger the regularization. For this we settled on 0.08027. Although this parameter did not make a big difference and provided similar results for values between 0.8 and 1.2 \\ \hline
-    fit\_intercept & From testing we have found out that for this dataset adding a bias works better than not having bias thus True  \\ \hline
-    max\_iter & We settled on 342 maximum number of iterations taken for the solver to converge. This parameter does not have a big importance but we found 342 gives accurate results. \\ \hline
-    solver & Contains the options ‘newton-cg’, ‘lbfgs’, ‘liblinear’, ‘sag’, ‘saga’, default=’lbfgs’. ‘Saga’ gives the best accuracy overall. Solver is the most influential hyperparameter as we can see from the importance and correlation table \\ \hline
-    tol & tolerance for stopping criteria which tells the algorithm to stop searching when some tolerance is achieved. This parameter did not make a difference, we settled on 0.0002277 \\ \hline
+    \textbf{Parameter} & \textbf{Type} & \textbf{Conclusion} \\ \hline
+    C & float & The smaller this value is the stronger the regularization. For this we settled on 0.08027. Although this parameter did not make a big difference and provided similar results for values between 0.8 and 1.2 \\ \hline
+    fit\_intercept & bool & From testing we have found out that for this dataset adding a bias works better than not having bias thus True  \\ \hline
+    max\_iter & int &  We settled on 342 maximum number of iterations taken for the solver to converge. This parameter does not have a big importance but we found 342 gives accurate results. \\ \hline
+    solver & string & Contains the options ‘newton-cg’, ‘lbfgs’, ‘liblinear’, ‘sag’, ‘saga’, default=’lbfgs’. ‘Saga’ gives the best accuracy overall. Solver is the most influential hyperparameter as we can see from the importance and correlation table \\ \hline
+    tol & float & tolerance for stopping criteria which tells the algorithm to stop searching when some tolerance is achieved. This parameter did not make a difference, we settled on 0.0002277 \\ \hline
 
 
   \end{tabular}
@@ -139,17 +146,29 @@ Additionally ‘sag’ and ‘saga’ guarantee fast convergence on features wit
 
 \begin{table}[ht]
   \centering
-  \begin{tabular}{|p{0.25\linewidth} | p{0.7\linewidth}|} 
+  \begin{tabular}{|p{0.25\linewidth} | p{0.15 \linewidth} | p{0.45\linewidth}|} 
     \hline
-    \textbf{Parameter}  & \textbf{Conclusion} \\ \hline
-    alpha & This has a positive correlation to accuracy as higher alpha value equates to higher accuracy. \\ \hline 
-    solver & lbfgs is the most accurate value of this parameter with a strong positive correlation out of the three (lbfgs, adam, sgd). \\ \hline
-    max\_iter & The maximum number of iterations - In general, higher accuracy can be achieved with a larger amount of max iterations. \\ \hline
-    activation & Out of the four activation functions (relu, tanh, identity and logistic), relu is the only one with a positive correlation, giving the highest accuracy overall. \\ \hline  
-    learning\_rate & 'adaptive' achieves the highest accuracy while, 'constant' and 'invscaling' vary widely. \\ \hline  
-    hidden\_layer\_sizes & Has a negative correlation - the number neurons in the n-th hidden layer has no effect on accuracy. \\ \hline
+    \textbf{Parameter} & \textbf{Type} & \textbf{Conclusion} \\ \hline
+    alpha & float & This has a positive correlation to accuracy as higher alpha value equates to higher accuracy. \\ \hline 
+    solver & string & ‘Lbfgs’ solver did provide the best accuracy consistently when compared to other solvers such as ‘adam’ and ‘sgd’ which supports the statement from [X002] staying that ‘Lbfgs’ works best for small datasets. \\ \hline
+    max\_iter & int & The maximum number of iterations - In general, higher accuracy can be achieved with a larger amount of max iterations. \\ \hline
+    activation & string & Out of the four activation functions (relu, tanh, identity and logistic), relu is the only one with a positive correlation, giving the highest accuracy overall. \\ \hline  
+    learning\_rate & string & 'adaptive' achieves the highest accuracy while, 'constant' and 'invscaling' vary widely. \\ \hline  
+    hidden\_layer\_sizes & tuple & Has a negative correlation - the number neurons in the n-th hidden layer has no effect on accuracy. \\ \hline
   \end{tabular}
 \end{table}\label{MLP_Analysis_Table}
+
+\newpage
+\subsection{Convolutional Neural Networks}
+\subsubsection{Critical limitation of CNN experimental methodology:}
+
+We were unable to disable memoization between experiments over each loop, so all the parameters are restored between runs within a given experiment, consequently we noted only significant changes to the loss when training on all classes, after which convergence was achieved in a single epoch. We attempted to clear the model parameters, clear the GPU memory, and model save the randomly initialised parameters and load them back in between experiments but could not prevent the CNN model using data encoded from previous experiments. This does invalidate our results, when compared to the discrete experiments in the previous sections, however this can be a demonstrable advantage of a CNN, in this situation it consistently correctly classifies the images despite changing the dimensions of the output layer and the classification targets (albeit on the same dataset).
+
+
+During all experiments with training and testing data, at worst our CNN scored an accuracy of 97% on the test dataset when classifying all classes, the CNN was capable of correct classification even when 9000 instances were moved from the training set to the testing set.
+
+The CNN was unsurprisingly the best performing classifier, In many of the kfold experiments the CNN managed an accuracy of 100%, but this could be due in part to the memoization effect between experiments, this is particularly noticeable on the kfold experiments.
+
 
 \newpage
 \section{Variation in performance according to different metrics (TP Rate, FP Rate, Precision,
@@ -187,7 +206,35 @@ As a team we are happy with everyone's contributions to the project. All team me
 \newpage
 \section{J48}
 
-\huge{J48 PARAM TABLE HERE}
+\subsection{J48 Parameter Importance}
+  \begin{table}[ht]
+    \centering
+    \begin{tabular}{|p{0.3\linewidth} | p{0.3\linewidth}| p{0.3\linewidth}|} 
+      \hline
+      \textbf{Parameter Config}  & \textbf{Importance} & \textbf{Correlation} \\ \hline
+        min\_weight\_fraction\_leaf & 0.668  & -0.666 \\ \hline
+        min\_impurity\_decrease & 0.052 & -0.241 \\ \hline
+        min\_samples\_leaf & 0.016 & 0.007 \\ \hline
+        max\_depth & 0.012 & 0.084 \\ \hline
+        min\_samples\_split & 0.009 & -0.108 \\ \hline
+
+    \end{tabular}
+  \end{table}\label{J48_ParamImp1}
+
+  \begin{table}[ht]
+    \centering
+    \begin{tabular}{|p{0.3\linewidth} | p{0.3\linewidth}| p{0.3\linewidth}|} 
+      \hline
+      \textbf{Parameter Config}  & \textbf{Importance} & \textbf{Correlation} \\ \hline
+        max\_features.value\_log2 & 0.133 & -0.372 \\ \hline
+        max\_features.value\_sqrt & 0.003 & 0.196 \\ \hline
+        splitter.value\_best & 0.049 & 0.051 \\ \hline
+        splitter.value\_random & 0.043 & -0.051 \\ \hline
+        criterion.value\_entropy & 0.002 & -0.022 \\ \hline
+        criterion.value\_gini & 0.002 & 0.022 \\ \hline
+
+    \end{tabular}
+  \end{table}\label{J48_ParamImp2}
 
 \begin{sidewaysfigure}[h]
   \caption {Accuracy over time - J48} \label{J48AccOverTime}
@@ -195,11 +242,11 @@ As a team we are happy with everyone's contributions to the project. All team me
   \includegraphics[width = \textwidth, height = \textwidth, keepaspectratio]{Images/J48 Acc over time.png}
 \end{sidewaysfigure}
 
-\begin{sidewaysfigure}[h]
+\begin{figure}[h]
   \caption {J48 Parameters} \label{ParallelCoordJ48}
   \centering 
   \includegraphics[width = \textwidth, height = \textwidth, keepaspectratio]{Images/J48 ParallelCoordGraph.png}
-\end{sidewaysfigure}
+\end{figure}
 
 
 
@@ -239,11 +286,11 @@ As a team we are happy with everyone's contributions to the project. All team me
     \includegraphics[width = \textwidth, height = \textwidth, keepaspectratio]{Images/RF Acc over time.png}
 \end{sidewaysfigure}
 
-\begin{sidewaysfigure}[h]
+\begin{figure}[h]
     \caption {Random Forest Parameters} \label{ParallelCoordRF}
     \centering 
     \includegraphics[width = \textwidth, height = \textwidth, keepaspectratio]{Images/RF ParallelCoordGraph.png}
-\end{sidewaysfigure}
+\end{figure}
 
 
   
@@ -285,11 +332,12 @@ As a team we are happy with everyone's contributions to the project. All team me
     \includegraphics[width = \textwidth, height = \textwidth, keepaspectratio]{Images/LC Acc over time.png}
 \end{sidewaysfigure}
 
-\begin{sidewaysfigure}[h]
+\begin{figure}[h]
     \caption {Random Forest Parameters} \label{ParallelCoordLC}
     \centering 
     \includegraphics[width = \textwidth, height = \textwidth, keepaspectratio]{Images/LC ParallelCoordGraph.png}
-\end{sidewaysfigure}
+\end{figure}
+
   \FloatBarrier
 % =================== Multilayer Perceptron APPENDIX here ===================
 \newpage
@@ -332,11 +380,11 @@ As a team we are happy with everyone's contributions to the project. All team me
     \includegraphics[width = \textwidth, height = \textwidth, keepaspectratio]{Images/MLP Acc over time.png}
 \end{sidewaysfigure}
 
-\begin{sidewaysfigure}[h]
+\begin{figure}[h]
   \caption {Multilayer Perceptron Parameters} \label{ParallelCoordMLP}
   \centering 
   \includegraphics[width = \textwidth, height = \textwidth, keepaspectratio]{Images/MLP ParallelCoordGraph.png}
-\end{sidewaysfigure}
+\end{figure}
 
 \FloatBarrier
 % =================== END APPENDIX ===================
