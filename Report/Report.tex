@@ -38,7 +38,7 @@
 % ============   ============   ============
 \newpage
 \section{Introduction}
-We used Weights and Biases (\url{https://wandb.ai/home}) to run these experiments which allowed us to generate the graphs shown in this document.
+For both decision trees and neural networks, we used Weights and Biases (\url{https://wandb.ai/home}) to visualise these experiments which we used to record and organise the experiment data shown the graphs shown in this document.
 
 
 \newpage
@@ -50,13 +50,43 @@ Neural Nets)}
 
 \newpage
 \section{Variation in performance with varying learning parameters in Decision Trees}
-
+% ===================================== J48 =====================================
 \subsection{J48}
 
+\textbf{max\_depth -} The maximum depth of the tree. \\
+\textbf{min\_impurity\_decrease -} Splits a node if this split induces a decrease of the impurity greater than or equal to this value. \\
+\textbf{min\_samples\_leaf -} the minimum number of samples to be considered a leaf. \\
+\textbf{min\_weight\_fraction\_leaf -} The minimum number of samples required to be at a leaf node. \\
+\textbf{criterion\_value -}[‘Gini’,’Entropy’]: Measures the quality of the split.
+\textbf{max\_features -} [‘auto’,’log2’,’sqrt’] : max features considers the number of features when looking for the best split. Auto just picks the best result so had the same result as log2. \\
+\textbf{Splitter -} [‘best’, ‘random’]: \\
 
+\begin{table}[ht]
+  \centering
+  \begin{tabular}{|p{0.25\linewidth} | p{0.15 \linewidth} | p{0.45\linewidth}|} 
+    \hline
+    \textbf{Parameter}  & \textbf{Type} &\textbf{Conclusion} \\ \hline
+    max\_depth & int & had low importance value of 0.012 and provided some correlation 0.084. \\ \hline
+    min\_impurity\_decrease & float & had a low importance value of 0.051 and a strong negative correlation of -0.241.  \\ \hline
+    min\_samples\_leaf & int or float & had low importance 0.014 and provided a tiny positive correlation of 0.007. \\ \hline
+    min\_weight\_fraction\_leaf & float & gives a strong negative correlation in terms of accuracy, meaning the higher the min\_weight\_fraction\_leaf value, the lower the accuracy.\\ \hline
+    criterion & string & Both provided a very low importance value of 0.003. Entropy had a very small negative correlation of -0.022 and Gini a positive correlation of 0.022. \\ \hline
+    max\_features & string & Log2 provided an importance of 0.133 and a high negative correlation of -0.372. Log2 provided a tiny importance of 0.003 but a relatively good correlation of 0.196. \\ \hline
+    splitter & string & ‘best’ and ‘random’ with best-having importance of 0.048 and random 0.044. Best has a positive correlation of 0.051 whereas random -0.051. \\ \hline
+  \end{tabular}
+\end{table}\label{RF_Analysis_Table}
+
+% ===================================== RANDOM FOREST =====================================
 
 \newpage
 \subsection{Random Forest}
+\textbf{min\_samples\_split -} The minimum number of samples required to split an internal node \\
+\textbf{min\_samples\_leaf -} The minimum number of samples required to be at a leaf node.  \\
+\textbf{n\_estimators -} The number of trees in the forest.\\
+\textbf{min\_weight\_fraction\_leaf -} The minimum number of samples required to be at a leaf node. \\
+\textbf{max\_features -} The number of features to consider when looking for the best \\
+\textbf{criterion -} The function to measure the quality of a split. Supported criteria are “gini” for the Gini impurity and “entropy” for the information gain. \\
+
 
 \begin{table}[ht]
   \centering
@@ -69,17 +99,41 @@ Neural Nets)}
     n\_estimators & This is defined as the number of trees in the forest, it seems to have very little correlation but high importance. \\ \hline
     min\_samples\_leaf & Gives a strong negative correlation in terms of accuracy, meaning the higher minimum samples at a leaf node, the lower the accuracy. \\ \hline
     min\_weight\_fraction\_leaf & Has a somewhat positive correlation to accuracy. e.g. total weight required at a leaf node varies between 76\% and 89\% accuracy\\ \hline
-
   \end{tabular}
 \end{table}\label{RF_Analysis_Table}
 See Parameter Importance (Figure \ref{RF_ParamImp1})
 
 \newpage
 \section{Variation in performance with varying learning parameters in Neural Networks}
+% ===================================== LINEAR CLASSIFIER =====================================
 \subsection{Linear Classifier}
 
+For a linear classifier we have decided to use logistic regression. 
+Shown below is the hyperparameter importance concerning the performance of Logistic Regression.
+
+The accuracy fluctuates depending on which hyperparameters are used. Logistic Regression has a ‘solver’ hyperparameter in sklearn which is the algorithm to use in the optimization. We have tested the following: ‘newton-cg’, ‘lbfgs’, ‘liblinear’, ‘sag’, ‘saga’. Sag and Saga give the best results with 89% accuracy. Liblinear isn't far behind with 88%.
+Other solvers have a negative impact on the performance, this can be seen in the Solver parameter importance table where their correlation values are negative.
+
+See Parameter Importance (Figure \ref{LC_ParamImp1})
+
+Additionally ‘sag’ and ‘saga’ guarantee fast convergence on features with approximately the same scale [R41] which is the case with our datasets as pixel values have the same scale. This can be seen as the number of iterations between 200-800 don’t change much in the accuracy and from the scatter chart of the accuracy of the Logistic Regression vs the number of sweeps created.
+
+\begin{table}[ht]
+  \centering
+  \begin{tabular}{|p{0.25\linewidth} | p{0.7\linewidth}|} 
+    \hline
+    \textbf{Parameter}  & \textbf{Conclusion} \\ \hline
+    C & The smaller this value is the stronger the regularization. For this we settled on 0.08027. Although this parameter did not make a big difference and provided similar results for values between 0.8 and 1.2 \\ \hline
+    fit\_intercept & From testing we have found out that for this dataset adding a bias works better than not having bias thus True  \\ \hline
+    max\_iter & We settled on 342 maximum number of iterations taken for the solver to converge. This parameter does not have a big importance but we found 342 gives accurate results. \\ \hline
+    solver & Contains the options ‘newton-cg’, ‘lbfgs’, ‘liblinear’, ‘sag’, ‘saga’, default=’lbfgs’. ‘Saga’ gives the best accuracy overall. Solver is the most influential hyperparameter as we can see from the importance and correlation table \\ \hline
+    tol & tolerance for stopping criteria which tells the algorithm to stop searching when some tolerance is achieved. This parameter did not make a difference, we settled on 0.0002277 \\ \hline
 
 
+  \end{tabular}
+\end{table}\label{RF_Analysis_Table}
+
+% ===================================== MULTILAYER PERCEPTRON =====================================
 \newpage
 \subsection{Multilayer Perceptron}
 
@@ -101,7 +155,7 @@ See Parameter Importance (Figure \ref{RF_ParamImp1})
 \section{Variation in performance according to different metrics (TP Rate, FP Rate, Precision,
 Recall, F Measure, ROC Area)}
 
-% ============ APPENDICES BEGINNING ============
+% ============ APPENDICES BEGINNING ============================================
 \pagebreak
 \appendix
 \appendixpage
@@ -129,16 +183,28 @@ Recall, F Measure, ROC Area)}
 As a team we are happy with everyone's contributions to the project. All team members were punctual and showed up to all scheduled meetings. Sam took the lead as project manager throughout the project delegating the workload and providing support to others.
 
 
-% =================== J48 here ===================
+% =================== J48 APPENDIX here ===================
 \newpage
 \section{J48}
 
+\huge{J48 PARAM TABLE HERE}
 
+\begin{sidewaysfigure}[h]
+  \caption {Accuracy over time - J48} \label{J48AccOverTime}
+  \centering
+  \includegraphics[width = \textwidth, height = \textwidth, keepaspectratio]{Images/J48 Acc over time.png}
+\end{sidewaysfigure}
+
+\begin{sidewaysfigure}[h]
+  \caption {J48 Parameters} \label{ParallelCoordJ48}
+  \centering 
+  \includegraphics[width = \textwidth, height = \textwidth, keepaspectratio]{Images/J48 ParallelCoordGraph.png}
+\end{sidewaysfigure}
 
 
 
 \FloatBarrier
-% =================== Random Forest here ===================
+% =================== Random Forest APPENDIX here ===================
 \newpage
 \section{Random Forest}
 
@@ -182,13 +248,50 @@ As a team we are happy with everyone's contributions to the project. All team me
 
   
   \FloatBarrier
-% =================== Linear Classifier here ===================
+% =================== Linear Classifier APPENDIX here ===================
 \newpage
 \section{Linear Classifier}
 
+\subsection{Linear Classifier Parameter Importance}
+  \begin{table}[ht]
+    \centering
+    \begin{tabular}{|p{0.3\linewidth} | p{0.3\linewidth}| p{0.3\linewidth}|} 
+      \hline
+      \textbf{Solver Parameter Config}  & \textbf{Importance} & \textbf{Correlation} \\ \hline
+      lbfgs & 0.786 & -0.869 \\ \hline
+      newton-cg & 0.159 & -0.271 \\ \hline
+      liblinear & 0.042 & -0.037 \\ \hline
+      saga & 0.009 & 0.691 \\ \hline
+      sag & 0.003 & 0.170 \\ \hline
+    \end{tabular}
+  \end{table}\label{LC_ParamImp1}
 
-\FloatBarrier
-% =================== Multilayer Perceptron here ===================
+  \begin{table}[ht]
+    \centering
+    \begin{tabular}{|p{0.3\linewidth} | p{0.3\linewidth}| p{0.3\linewidth}|} 
+      \hline
+      \textbf{Config Parameter Config}  & \textbf{Importance} & \textbf{Correlation} \\ \hline
+      max-iter & 0.194 & -0.634 \\ \hline
+      l1-ratio & 0.124 & -0.510 \\ \hline
+      fit-intercept & 0.058 & 0.367 \\ \hline
+      tol & 0.046 & -0.174 \\ \hline
+      C & 0.031 & 0.260 \\ \hline
+    \end{tabular}
+  \end{table}\label{LC_ParamImp2}
+
+  \begin{sidewaysfigure}[h]
+    \caption {Accuracy over time - Linear Classifier} \label{LCAccOverTime}
+    \centering
+    \includegraphics[width = \textwidth, height = \textwidth, keepaspectratio]{Images/LC Acc over time.png}
+\end{sidewaysfigure}
+
+\begin{sidewaysfigure}[h]
+    \caption {Random Forest Parameters} \label{ParallelCoordLC}
+    \centering 
+    \includegraphics[width = \textwidth, height = \textwidth, keepaspectratio]{Images/LC ParallelCoordGraph.png}
+\end{sidewaysfigure}
+  \FloatBarrier
+% =================== Multilayer Perceptron APPENDIX here ===================
 \newpage
 \section{Multilayer Perceptron}
 
