@@ -5,6 +5,7 @@ from sklearn.model_selection import KFold, StratifiedKFold
 from sklearn.metrics import accuracy_score
 from . import GetData as gd
 import SupervisedLearning.NeuralNetworks.Conv as cnn
+import SupervisedLearning.Experiments.RunExperiments as re
 
 label_dict = {
     -1: 'All Classes',
@@ -37,8 +38,6 @@ def run_all_KF_experiments(classifier, classifier_name='', experiment_range=(0, 
     :return: List of dictionaries with each k-fold scores
     :rtype: list
     """
-    train_scores = []
-    test_scores = []
 
     for i in range(experiment_range[0], experiment_range[1]):
         classifier.clear_model()
@@ -55,12 +54,9 @@ def run_all_KF_experiments(classifier, classifier_name='', experiment_range=(0, 
         classifier.reinit_model()
         
         #
-        train_s, test_s = run_KFold_experiment(classifier, X_train, y_train, cnn_model_name=classifier_name,
+        run_KFold_experiment(classifier, X_train, y_train, cnn_model_name=classifier_name,
                                                classes_desc=class_title, class_labels=class_labels, stratified=True, custom_name=experiment_name)
-        train_scores.append(train_s)
-        test_scores.append(test_s)
 
-    return train_scores, test_scores
 
 
 def run_KFold_experiment(cnn_model, X, y, cnn_model_name='', classes_desc='all-classes', class_labels=g_labels, stratified=False, balance_classes=False, n_splits=10, random_state=0, custom_name=None, **kwargs):
@@ -111,8 +107,6 @@ def run_KFold_experiment(cnn_model, X, y, cnn_model_name='', classes_desc='all-c
         # KFold(n_splits=5, shuffle=False, random_state=None)
         kf = KFold(n_splits=n_splits, random_state=random_state)
 
-    train_scores = {}
-    test_scores = {}
 
     for i, (train_indices, test_indices) in enumerate(kf.split(X=X, y=y)):
         with wandb.init(project=Experiment_name, entity='supervisedlearning', reinit=True, config=hyperparam_dict):
@@ -131,4 +125,52 @@ def run_KFold_experiment(cnn_model, X, y, cnn_model_name='', classes_desc='all-c
             wandb.log({'Label_class': classes_desc, 'num_classes':len(class_labels)})
             #wandb.sklearn.plot_confusion_matrix(y_test, y_pred, class_labels)
 
-    return train_scores, test_scores
+
+
+
+def run_all_test_set_experiments(classifier, classifier_name='', experiment_range=(0, 11), experiment_name='All test set experiments', train_data_in_test=False, num_instances=4000):
+    
+
+    for i in range(experiment_range[0], experiment_range[1]):
+        class_title = label_dict[i-1]
+        X_train, y_train = gd.get_data(i-1)
+        X_test, y_test = gd.get_data(i-1, train=False)
+        if train_data_in_test:
+            X_train, X_test, y_train, y_test = re.new_test_set(
+                (X_train, y_train), (X_test, y_test), num_instances=num_instances)
+        if i == 0:
+            class_labels = g_labels[1:]
+        else:
+            class_labels = binary_labels
+
+        run_test_set_experiment(classifier, X_train, X_test, y_train, y_test, classifier_name=classifier_name,
+                                                  classes_desc=class_title, class_labels=class_labels, custom_name=experiment_name)
+
+
+
+def run_test_set_experiment(cnn_model, X_train, X_test, y_train, y_test, classifier_name='', classes_desc='all-classes', class_labels=g_labels, custom_name=None):
+    if custom_name is None:
+        Experiment_name = 'SL-Train_Test_{}_classifer-{}'.format(
+            classes_desc, classifier_name)
+    else:
+        Experiment_name = custom_name
+
+    hyperparam_dict = cnn_model.get_params()
+
+    with wandb.init(project=Experiment_name, entity='supervisedlearning', reinit=True, config=hyperparam_dict):
+        cnn_model.set_wandb_callback(WandbCallback)
+        X_train = X_train.to_numpy()
+        y_train = y_train.to_numpy(dtype='int64')
+
+        X_test = X_test.to_numpy()
+        y_test = y_test.to_numpy(dtype='int64')
+
+        cnn_model.build_classifier(X_train, y_train, (X_test, y_test))
+        #y_pred = cnn_model.prediction(X_test)
+        #y_probs = cnn_model.prediction_proba(X_test)
+        #train_scores = cnn_model.run_classifier(X_train, y_train)
+        #test_scores = cnn_model.run_classifier(X_test, y_test)
+        
+        wandb.log({'Label_class': classes_desc, 'num_classes': len(class_labels)})
+
+    #return train_scores, test_scores
