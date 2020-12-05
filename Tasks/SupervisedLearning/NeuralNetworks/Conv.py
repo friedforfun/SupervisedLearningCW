@@ -2,6 +2,7 @@ from sklearn.utils import validation
 from ..Experiments.abstract import Classifier
 from sklearn.metrics import confusion_matrix
 import math
+from numba import cuda
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
@@ -27,7 +28,7 @@ def merge_dict(own: dict, other: dict) -> dict:
 
 
 class ConvolutionalNeuralNetwork(Classifier):
-    def __init__(self, num_classes, epochs=50, use_gpu=True, **kwargs):
+    def __init__(self, num_classes, epochs=50, use_gpu=True, augmented=False):
         if use_gpu:
             self.gpus = tf.config.experimental.list_physical_devices('GPU')
             if self.gpus:
@@ -37,35 +38,21 @@ class ConvolutionalNeuralNetwork(Classifier):
                 except RuntimeError as e:
                     print("Err: ", e)
 
-        self.params = {
-            'num_classes': num_classes,
-            'epochs': epochs,
-        }
 
-        if kwargs:
-            self.params = merge_dict(self.params, kwargs)
+        self.augmented = augmented
+        # if kwargs:
+        #     self.params = merge_dict(self.params, kwargs)
 
         self.epochs = epochs
         self.num_classes = num_classes
 
-        self.wandb_callback = None
+        self.params = {
+            #'num_classes': self.num_classes,
+            'epochs': self.epochs,
+            'augmented': self.augmented
+        }
 
-        self.model = Sequential()
-        self.model.add(Conv2D(75, (3, 3), strides=1, padding='same', activation='relu', input_shape=(48, 48, 1)))
-        self.model.add(BatchNormalization())
-        self.model.add(MaxPool2D((2, 2), strides=2, padding='same'))
-        self.model.add(Conv2D(50, (3, 3), strides=1, padding='same', activation='relu'))
-        self.model.add(Dropout(0.2))
-        self.model.add(BatchNormalization())
-        self.model.add(MaxPool2D((2, 2), strides=2, padding='same'))
-        self.model.add(Conv2D(25, (3, 3), strides=1, padding='same', activation='relu'))
-        self.model.add(BatchNormalization())
-        self.model.add(MaxPool2D((2, 2), strides=2, padding='same'))
-        self.model.add(Flatten())
-        self.model.add(Dense(units=512, activation='relu'))
-        self.model.add(Dropout(0.3))
-        self.model.add(Dense(units=self.num_classes, activation='softmax'))
-        self.model.compile(loss='categorical_crossentropy', metrics=['accuracy'])
+        self.wandb_callback = None
 
         self.datagen = ImageDataGenerator(
             # randomly rotate images in the range (degrees, 0 to 180)
@@ -77,6 +64,9 @@ class ConvolutionalNeuralNetwork(Classifier):
             height_shift_range=0.1,
             horizontal_flip=False,  # randomly flip images horizontally
             vertical_flip=False)  # Don't randomly flip images vertically
+
+        self.reinit_model()
+        #self.model.save_weights('random')
 
     def augmented_training(self, X_train, y_train, X_test, y_test, batch_size=128):
         """To reduce overfitting we use an image data generator
@@ -110,6 +100,35 @@ class ConvolutionalNeuralNetwork(Classifier):
                            callbacks=[self.wandb_callback()])
         
 
+    def conventional_training(self, X_train, y_train, X_test, y_test):
+
+        X_train = self.preprocess_images(X_train)
+        X_test = self.preprocess_images(X_test)
+
+        y_test = self.y_to_binary(y_test)
+        y_train = self.y_to_binary(y_train)
+
+        if self.wandb_callback is None:
+            self.model.fit(X_train, y_train,
+                           epochs=self.epochs,
+                           verbose=1,
+                           validation_data=(X_test, y_test))
+        else:
+            self.model.fit(X_train, y_train,
+                           epochs=self.epochs,
+                           verbose=1,
+                           validation_data=(X_test, y_test),
+                           callbacks=[self.wandb_callback()])
+
+    def clear_model(self):
+        self.model.reset_metrics()
+        self.model.reset_states()
+        keras.backend.clear_session()
+
+
+    def set_num_classes(self, x):
+        self.num_classes = x
+
     def preprocess_images(self, image_matrix):
         image_matrix = image_matrix.reshape(-1, 48, 48, 1)
         return image_matrix
@@ -119,6 +138,30 @@ class ConvolutionalNeuralNetwork(Classifier):
 
     def set_wandb_callback(self, callback):
         self.wandb_callback = callback
+
+    def reinit_model(self):
+        self.model = Sequential()
+        self.model.add(Conv2D(75, (3, 3), strides=1, padding='same',
+                              activation='relu', input_shape=(48, 48, 1)))
+        self.model.add(BatchNormalization())
+        self.model.add(MaxPool2D((2, 2), strides=2, padding='same'))
+        self.model.add(Conv2D(50, (3, 3), strides=1,
+                              padding='same', activation='relu'))
+        self.model.add(Dropout(0.2))
+        self.model.add(BatchNormalization())
+        self.model.add(MaxPool2D((2, 2), strides=2, padding='same'))
+        self.model.add(Conv2D(25, (3, 3), strides=1,
+                              padding='same', activation='relu'))
+        self.model.add(BatchNormalization())
+        self.model.add(MaxPool2D((2, 2), strides=2, padding='same'))
+        self.model.add(Flatten())
+        self.model.add(Dense(units=512, activation='relu'))
+        self.model.add(Dense(units=512, activation='relu'))
+        self.model.add(Dropout(0.3))
+        self.model.add(Dense(units=self.num_classes, activation='softmax'))
+        self.model.compile(loss='categorical_crossentropy',
+                           metrics=['accuracy'])
+        
 
     def run_classifier(self, X, y):
         """Abstract class to use for running experiments
@@ -146,28 +189,11 @@ class ConvolutionalNeuralNetwork(Classifier):
         :type y: numpy.array
         """
 
-        X_train = self.preprocess_images(X)
-
-        if validation_data[0] is not None and validation_data[1] is not None:
-            X_test = self.preprocess_images(validation_data[0])
-            y_test = self.y_to_binary(validation_data[1])
+        if self.augmented:
+            self.augmented_training(X, y, *validation_data)
+        
         else:
-            raise ValueError('Validation data must be provided for a CNN')
-
-        y_train = self.y_to_binary(y)
-
-        if self.wandb_callback is None:
-            self.model.fit(X_train, y_train,
-                        epochs=self.epochs,
-                        verbose=1,
-                        validation_data=(X_test, y_test))
-        else:
-            self.model.fit(X_train, y_train,
-                           epochs=self.epochs,
-                           verbose=1,
-                           validation_data=(X_test, y_test), 
-                           callbacks=[self.wandb_callback()])
-
+            self.conventional_training(X, y, *validation_data)
 
     def get_classifier(self):
         """A method to return the classifier object
