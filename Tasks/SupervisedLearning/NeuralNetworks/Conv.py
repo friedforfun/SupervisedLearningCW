@@ -2,6 +2,7 @@ from sklearn.utils import validation
 from ..Experiments.abstract import Classifier
 from sklearn.metrics import confusion_matrix
 import math
+from numba import cuda
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
@@ -37,11 +38,6 @@ class ConvolutionalNeuralNetwork(Classifier):
                 except RuntimeError as e:
                     print("Err: ", e)
 
-        self.params = {
-            'num_classes': num_classes,
-            'epochs': epochs,
-            'augmented': augmented
-        }
 
         self.augmented = augmented
         # if kwargs:
@@ -50,25 +46,13 @@ class ConvolutionalNeuralNetwork(Classifier):
         self.epochs = epochs
         self.num_classes = num_classes
 
-        self.wandb_callback = None
+        self.params = {
+            #'num_classes': self.num_classes,
+            'epochs': self.epochs,
+            'augmented': self.augmented
+        }
 
-        self.model = Sequential()
-        self.model.add(Conv2D(75, (3, 3), strides=1, padding='same', activation='relu', input_shape=(48, 48, 1)))
-        self.model.add(BatchNormalization())
-        self.model.add(MaxPool2D((2, 2), strides=2, padding='same'))
-        self.model.add(Conv2D(50, (3, 3), strides=1, padding='same', activation='relu'))
-        self.model.add(Dropout(0.2))
-        self.model.add(BatchNormalization())
-        self.model.add(MaxPool2D((2, 2), strides=2, padding='same'))
-        self.model.add(Conv2D(25, (3, 3), strides=1, padding='same', activation='relu'))
-        self.model.add(BatchNormalization())
-        self.model.add(MaxPool2D((2, 2), strides=2, padding='same'))
-        self.model.add(Flatten())
-        self.model.add(Dense(units=512, activation='relu'))
-        self.model.add(Dense(units=512, activation='relu'))
-        self.model.add(Dropout(0.3))
-        self.model.add(Dense(units=self.num_classes, activation='softmax'))
-        self.model.compile(loss='categorical_crossentropy', metrics=['accuracy'])
+        self.wandb_callback = None
 
         self.datagen = ImageDataGenerator(
             # randomly rotate images in the range (degrees, 0 to 180)
@@ -80,6 +64,9 @@ class ConvolutionalNeuralNetwork(Classifier):
             height_shift_range=0.1,
             horizontal_flip=False,  # randomly flip images horizontally
             vertical_flip=False)  # Don't randomly flip images vertically
+
+        self.reinit_model()
+        #self.model.save_weights('random')
 
     def augmented_training(self, X_train, y_train, X_test, y_test, batch_size=128):
         """To reduce overfitting we use an image data generator
@@ -133,6 +120,14 @@ class ConvolutionalNeuralNetwork(Classifier):
                            validation_data=(X_test, y_test),
                            callbacks=[self.wandb_callback()])
 
+    def clear_model(self):
+        self.model.reset_metrics()
+        self.model.reset_states()
+        keras.backend.clear_session()
+
+
+    def set_num_classes(self, x):
+        self.num_classes = x
 
     def preprocess_images(self, image_matrix):
         image_matrix = image_matrix.reshape(-1, 48, 48, 1)
@@ -143,6 +138,30 @@ class ConvolutionalNeuralNetwork(Classifier):
 
     def set_wandb_callback(self, callback):
         self.wandb_callback = callback
+
+    def reinit_model(self):
+        self.model = Sequential()
+        self.model.add(Conv2D(75, (3, 3), strides=1, padding='same',
+                              activation='relu', input_shape=(48, 48, 1)))
+        self.model.add(BatchNormalization())
+        self.model.add(MaxPool2D((2, 2), strides=2, padding='same'))
+        self.model.add(Conv2D(50, (3, 3), strides=1,
+                              padding='same', activation='relu'))
+        self.model.add(Dropout(0.2))
+        self.model.add(BatchNormalization())
+        self.model.add(MaxPool2D((2, 2), strides=2, padding='same'))
+        self.model.add(Conv2D(25, (3, 3), strides=1,
+                              padding='same', activation='relu'))
+        self.model.add(BatchNormalization())
+        self.model.add(MaxPool2D((2, 2), strides=2, padding='same'))
+        self.model.add(Flatten())
+        self.model.add(Dense(units=512, activation='relu'))
+        self.model.add(Dense(units=512, activation='relu'))
+        self.model.add(Dropout(0.3))
+        self.model.add(Dense(units=self.num_classes, activation='softmax'))
+        self.model.compile(loss='categorical_crossentropy',
+                           metrics=['accuracy'])
+        
 
     def run_classifier(self, X, y):
         """Abstract class to use for running experiments

@@ -1,8 +1,10 @@
+from copy import deepcopy
 import wandb
 from wandb.keras import WandbCallback
 from sklearn.model_selection import KFold, StratifiedKFold
 from sklearn.metrics import accuracy_score
 from . import GetData as gd
+import SupervisedLearning.NeuralNetworks.Conv as cnn
 
 label_dict = {
     -1: 'All Classes',
@@ -39,12 +41,20 @@ def run_all_KF_experiments(classifier, classifier_name='', experiment_range=(0, 
     test_scores = []
 
     for i in range(experiment_range[0], experiment_range[1]):
+        classifier.clear_model()
+        
+        #classifier = cnn.ConvolutionalNeuralNetwork(10)
         class_title = label_dict[i-1]
         X_train, y_train = gd.get_data(i-1)
         if i == 0:
             class_labels = g_labels[1:]
+            classifier.set_num_classes(10)
         else:
             class_labels = binary_labels
+            classifier.set_num_classes(2)
+        classifier.reinit_model()
+        
+        #
         train_s, test_s = run_KFold_experiment(classifier, X_train, y_train, cnn_model_name=classifier_name,
                                                classes_desc=class_title, class_labels=class_labels, stratified=True, custom_name=experiment_name)
         train_scores.append(train_s)
@@ -118,8 +128,7 @@ def run_KFold_experiment(cnn_model, X, y, cnn_model_name='', classes_desc='all-c
             #train_scores[i] = cnn_model.run_classifier(X_train, y_train)
             #test_scores[i] = cnn_model.run_classifier(X_test, y_test)
            
-            # wandb.log({'Final Accuracy': accuracy_score(
-            #     y_test, y_pred), 'Label_class': classes_desc})
+            wandb.log({'Label_class': classes_desc, 'num_classes':len(class_labels)})
             #wandb.sklearn.plot_confusion_matrix(y_test, y_pred, class_labels)
 
     return train_scores, test_scores
