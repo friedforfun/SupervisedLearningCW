@@ -170,14 +170,6 @@ def run_test_set_experiment(classifier, X_train, X_test, y_train, y_test, classi
 
     return train_scores, test_scores
 
-def calc_F_measure():
-    raise NotImplementedError
-
-def calc_ROC_area():
-    raise NotImplementedError
-
-def visualise():
-    raise NotImplementedError
 
 
 def new_test_set(training, testing, num_instances=4000, random_state=0):
