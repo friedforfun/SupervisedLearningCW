@@ -35,10 +35,11 @@
 \thispagestyle{empty}
 \pagebreak
 \setcounter{page}{1}
-% ============   ============   ============
+% ============ INTRODUCTION ============
 \newpage
 \section{Introduction}
 For both decision trees and neural networks, we used Weights and Biases (\url{https://wandb.ai/home}) to visualise these experiments which we used to record and organise the experiment data shown the graphs shown in this document.
+
 
 
 \newpage
@@ -46,29 +47,83 @@ For both decision trees and neural networks, we used Weights and Biases (\url{ht
 \subsection{Methodology}
 We used the same seed when moving the data from the training set to the testing set, so all experiments for a given classifier used the same training and testing data.
 \subsection{Turn left deep dive}
-The turn left dataset has an extremely small number of instances in its training dataset for 9000 moved to testing, Thus we would expect the worst prediction accuracy, in this case, the situation was so bad that our accuracy scores became misleading. Because the representation of ‘turn left’ was so poor in our dataset most of the classifiers simply predicted that there were no instances of turn left in the dataset and recorded a deceiving 97% accuracy (because 97% of the dataset is not in fact turn left). In fact this problem appeared for all binary classifications with the Random Forest classifier.
-The only classifiers that did not exhibit this behaviour were the Logistic Regression (LR) and Convolutional Neural Network classifiers (CNN). CNN scored a staggering 99.9% accuracy with the same minuscule training data, while LR managed 98.3% with 200 false negatives, 5 false positives and 60 true positives.
+The turn left dataset has an extremely small number of instances in its training dataset for 9000 moved to testing, Thus we would expect the worst prediction accuracy, in this case, the situation was so bad that our accuracy scores became misleading. Because the representation of ‘turn left’ was so poor in our dataset most of the classifiers simply predicted that there were no instances of turn left in the dataset and recorded a deceiving 97\% accuracy (because 97\% of the dataset is not in fact turn left). In fact this problem appeared for all binary classifications with the Random Forest classifier.
+The only classifiers that did not exhibit this behaviour were the Logistic Regression (LR) and Convolutional Neural Network classifiers (CNN). CNN scored a staggering 99.9\% accuracy with the same minuscule training data, while LR managed 98.3\% with 200 false negatives, 5 false positives and 60 true positives.
+\newline
 \par
-\textcolor{red}{\huge {GET IMAGES FROM GOOGLE DOCS}}
+\begin{figure}[h]
+  \caption {Class proportions in target variable}
+  \centering 
+  \includegraphics[width = \textwidth, height = 0.5\textheight, keepaspectratio]{Images/classProportionsInTargetVariable.png}
+\end{figure}
+An example distribution of labels between train (dark blue) and test (light blue), for the Beware cycle route ahead class. 
+
+\newpage
+\subsection{Original train \& test sets}
+\begin{figure}[h]
+  \caption {Class proportions in target variable}
+  \centering 
+  \includegraphics[width = \textwidth, height = 0.5\textheight, keepaspectratio]{Images/Sec1Original.png}
+\end{figure}
+
+\subsection{4000 moved}
+\begin{figure}[h]
+  \caption {Class proportions in target variable}
+  \centering 
+  \includegraphics[width = \textwidth, height = 0.5\textheight, keepaspectratio]{Images/Sec1-4k.png}
+\end{figure}
+
+\subsection{9000 moved}
+\begin{figure}[h]
+  \caption {Class proportions in target variable}
+  \centering 
+  \includegraphics[width = \textwidth, height = 0.5\textheight, keepaspectratio]{Images/Sec1-9k.png}
+\end{figure}
+\FloatBarrier
+
+\subsection{J48 Tree Classifier}
+\textcolor{red}{\textbf{As expected, moving randomly only 4000 instances from original training to testing set gives better accuracy when compared to moving 9000 instances as the classifier has less data to learn from and sees more new never seen data. The difference was quite big varying from 1\% to as much as 9\%, the only exception was the speed limit 20 sign that achieved the same accuracy whereas the opposite can be said about 30 and 50 speed limit signs that had a huge difference of 9\% decrease in accuracy when compared 4000 moved to 9000 moved.
+Despite different accuracies the confusion matrix remained the same having similar proportions.
+}}
 
 \newpage
 \section{Variation in performance with the change in the learning paradigm (Decision Trees versus
 Neural Nets)}
+\begin{itemize}
+  \item Decision trees performed comparatively poorly, particularly when the training data was reduced.
+\end{itemize}
 
 \newpage
 \section{Variation in performance with varying learning parameters in Decision Trees}
 % ===================================== J48 =====================================
-\subsection{J48}
+\subsection{Optimising Hyperparameters}
+We used a sweeping tool to try a large number of hyperparameters with a bayesian search strategy that uses a Gaussian process to model the function and then chooses parameters to optimize the probability of improvement according to the accuracy of the test set. \textcolor{red}{\textbf{NEEDS REPHRASE!}} 
+\url{https://docs.wandb.com/sweeps/configuration#search-strategy}.
+We opted to use the ‘all classes’ dataset for these sweeps because in our preliminary experiments we noticed the worst prediction accuracy with 10 classes.
 
+Figure shows high level overview of the MLP sweep, dark blue lines indicate lower accuracy and yellow had the highest accuracy. (See \ref{MLPSection})
+
+\begin{center}
+  \includegraphics [width = \textwidth, height = 0.3\textheight, keepaspectratio]{Images/MLP ParallelCoordGraph.png}
+\end{center}
+
+\textcolor{red}{\textbf{To evaluate the hyperparameters we collected and evaluated the linear correlation between the hyperparameter and the accuracy, and also a feature importance metric provided by weights and biases, this metric is computed by training a random forest with the hyperparameters as inputs and the accuracy as the target output, the feature importances are then extracted from the random forest. \url{https://docs.wandb.com/app/features/panels/parameter-importance}
+}}
+\par
+The feature importance metric is useful to identify the features that have a larger impact on the output of the model, coupled with correlation we can find the direction of the relationship. It may be the case that a very important feature is extremely bad for the result, in this case we will see a strong negative correlation, this information helps us hone in on the best hyperparameters to use.
+
+\newpage
+\subsection{J48}
 \textbf{max\_depth -} The maximum depth of the tree. \\
 \textbf{min\_impurity\_decrease -} Splits a node if this split induces a decrease of the impurity greater than or equal to this value. \\
 \textbf{min\_samples\_leaf -} the minimum number of samples to be considered a leaf. \\
 \textbf{min\_weight\_fraction\_leaf -} The minimum number of samples required to be at a leaf node. \\
 \textbf{criterion\_value -}[‘Gini’,’Entropy’]: Measures the quality of the split.
 \textbf{max\_features -} [‘auto’,’log2’,’sqrt’] : max features considers the number of features when looking for the best split. Auto just picks the best result so had the same result as log2. \\
-\textbf{Splitter -} [‘best’, ‘random’]: The strategy used to choose the split at each node. \\
+\textbf{Splitter -} [‘best’, ‘random’]: The strategy used to choose the split at each node. 
+\newline
 
-\begin{table}[ht]
+\begin{table}[h]
   \centering
   \begin{tabular}{|p{0.25\linewidth} | p{0.15 \linewidth} | p{0.45\linewidth}|} 
     \hline
@@ -82,7 +137,8 @@ Neural Nets)}
     splitter & string & 'best' had an importance of 0.048 and random 0.044. 'best' has a positive correlation of 0.051 whereas random -0.051. \\ \hline
   \end{tabular}
 \end{table}\label{RF_Analysis_Table}
-
+See Parameter Importance (Figure \ref{J48_ParamImp1})
+\FloatBarrier
 % ===================================== RANDOM FOREST =====================================
 
 \newpage
@@ -118,10 +174,8 @@ See Parameter Importance (Figure \ref{RF_ParamImp1})
 For a linear classifier we have decided to use logistic regression. 
 Shown below is the hyperparameter importance concerning the performance of Logistic Regression.
 
-The accuracy fluctuates depending on which hyperparameters are used. Logistic Regression has a ‘solver’ hyperparameter in sklearn which is the algorithm to use in the optimization. We have tested the following: ‘newton-cg’, ‘lbfgs’, ‘liblinear’, ‘sag’, ‘saga’. Sag and Saga give the best results with 89% accuracy. Liblinear isn't far behind with 88%.
+The accuracy fluctuates depending on which hyperparameters are used. Logistic Regression has a ‘solver’ hyperparameter in sklearn which is the algorithm to use in the optimization. We have tested the following: ‘newton-cg’, ‘lbfgs’, ‘liblinear’, ‘sag’, ‘saga’. Sag and Saga give the best results with 89\% accuracy. Liblinear isn't far behind with 88%.
 Other solvers have a negative impact on the performance, this can be seen in the Solver parameter importance table where their correlation values are negative.
-
-See Parameter Importance (Figure \ref{LC_ParamImp1})
 
 Additionally ‘sag’ and ‘saga’ guarantee fast convergence on features with approximately the same scale [R41] which is the case with our datasets as pixel values have the same scale. This can be seen as the number of iterations between 200-800 don’t change much in the accuracy and from the scatter chart of the accuracy of the Logistic Regression vs the number of sweeps created.
 
@@ -139,11 +193,13 @@ Additionally ‘sag’ and ‘saga’ guarantee fast convergence on features wit
 
   \end{tabular}
 \end{table}\label{RF_Analysis_Table}
+See Parameter Importance (Figure \ref{LC_ParamImp1})
 
 % ===================================== MULTILAYER PERCEPTRON =====================================
 \newpage
 \subsection{Multilayer Perceptron}
-
+\label{MLPSection}
+\textcolor{red}{ADD PARAM DEFINITIONS}
 \begin{table}[ht]
   \centering
   \begin{tabular}{|p{0.25\linewidth} | p{0.15 \linewidth} | p{0.45\linewidth}|} 
@@ -157,6 +213,8 @@ Additionally ‘sag’ and ‘saga’ guarantee fast convergence on features wit
     hidden\_layer\_sizes & tuple & Has a negative correlation - the number neurons in the n-th hidden layer has no effect on accuracy. \\ \hline
   \end{tabular}
 \end{table}\label{MLP_Analysis_Table}
+\FloatBarrier
+See Parameter Importance (Figure \ref{MLP_ParamImp1})
 
 \newpage
 \subsection{Convolutional Neural Networks}
@@ -165,9 +223,9 @@ Additionally ‘sag’ and ‘saga’ guarantee fast convergence on features wit
 We were unable to disable memoization between experiments over each loop, so all the parameters are restored between runs within a given experiment, consequently we noted only significant changes to the loss when training on all classes, after which convergence was achieved in a single epoch. We attempted to clear the model parameters, clear the GPU memory, and model save the randomly initialised parameters and load them back in between experiments but could not prevent the CNN model using data encoded from previous experiments. This does invalidate our results, when compared to the discrete experiments in the previous sections, however this can be a demonstrable advantage of a CNN, in this situation it consistently correctly classifies the images despite changing the dimensions of the output layer and the classification targets (albeit on the same dataset).
 
 
-During all experiments with training and testing data, at worst our CNN scored an accuracy of 97% on the test dataset when classifying all classes, the CNN was capable of correct classification even when 9000 instances were moved from the training set to the testing set.
+During all experiments with training and testing data, at worst our CNN scored an accuracy of 97\% on the test dataset when classifying all classes, the CNN was capable of correct classification even when 9000 instances were moved from the training set to the testing set.
 
-The CNN was unsurprisingly the best performing classifier, In many of the kfold experiments the CNN managed an accuracy of 100%, but this could be due in part to the memoization effect between experiments, this is particularly noticeable on the kfold experiments.
+The CNN was unsurprisingly the best performing classifier, In many of the kfold experiments the CNN managed an accuracy of 100\%, but this could be due in part to the memoization effect between experiments, this is particularly noticeable on the kfold experiments.
 
 
 \newpage
@@ -189,11 +247,11 @@ Recall, F Measure, ROC Area)}
   
   \begin{table}[ht]
     \centering
-    \begin{tabular}{|p{0.25\linewidth} | p{0.8\linewidth}|} 
+    \begin{tabular}{|p{0.2\linewidth} | p{0.75\linewidth}|} 
       \hline
       \textbf{Team member}  & \textbf{Involvement} \\ \hline
       Lewis Wilson & text here \\ \hline
-      Chun Man & text here  \\ \hline
+      Chun Man & Contributed to the experimenting and analysis of Random Forest, Report writing. \\ \hline
       Sam Fay-Hunt & text here \\ \hline
       Kamil Szymczak & text here \\ \hline
     \end{tabular}
@@ -236,12 +294,6 @@ As a team we are happy with everyone's contributions to the project. All team me
     \end{tabular}
   \end{table}\label{J48_ParamImp2}
 
-\begin{sidewaysfigure}[h]
-  \caption {Accuracy over time - J48} \label{J48AccOverTime}
-  \centering
-  \includegraphics[width = \textwidth, height = \textwidth, keepaspectratio]{Images/J48 Acc over time.png}
-\end{sidewaysfigure}
-
 \begin{figure}[h]
   \caption {J48 Parameters} \label{ParallelCoordJ48}
   \centering 
@@ -279,12 +331,6 @@ As a team we are happy with everyone's contributions to the project. All team me
       criterion.value\_gini & 0.012 & -0.404 \\ \hline
     \end{tabular}
   \end{table}\label{RF_ParamImp2}
-
-\begin{sidewaysfigure}[h]
-    \caption {Accuracy over time - Random Forest} \label{RFAccOverTime}
-    \centering
-    \includegraphics[width = \textwidth, height = \textwidth, keepaspectratio]{Images/RF Acc over time.png}
-\end{sidewaysfigure}
 
 \begin{figure}[h]
     \caption {Random Forest Parameters} \label{ParallelCoordRF}
@@ -325,12 +371,6 @@ As a team we are happy with everyone's contributions to the project. All team me
       C & 0.031 & 0.260 \\ \hline
     \end{tabular}
   \end{table}\label{LC_ParamImp2}
-
-  \begin{sidewaysfigure}[h]
-    \caption {Accuracy over time - Linear Classifier} \label{LCAccOverTime}
-    \centering
-    \includegraphics[width = \textwidth, height = \textwidth, keepaspectratio]{Images/LC Acc over time.png}
-\end{sidewaysfigure}
 
 \begin{figure}[h]
     \caption {Random Forest Parameters} \label{ParallelCoordLC}
@@ -374,12 +414,6 @@ As a team we are happy with everyone's contributions to the project. All team me
     \end{tabular}
   \end{table}\label{MLP_ParamImp2}
 
-\begin{sidewaysfigure}[h!]
-    \caption {Accuracy over time - Multilayer Perceptron} \label{MLPAccOverTime}
-    \centering
-    \includegraphics[width = \textwidth, height = \textwidth, keepaspectratio]{Images/MLP Acc over time.png}
-\end{sidewaysfigure}
-
 \begin{figure}[h]
   \caption {Multilayer Perceptron Parameters} \label{ParallelCoordMLP}
   \centering 
@@ -391,3 +425,9 @@ As a team we are happy with everyone's contributions to the project. All team me
 \end{appendices}
 
 \end{document}
+
+  % \begin{sidewaysfigure}[h]
+  %   \caption {Accuracy over time - J48} \label{J48AccOverTime}
+  %   \centering
+  %   \includegraphics[width = \textwidth, height = \textwidth, keepaspectratio]{Images/J48 Acc over time.png}
+  % \end{sidewaysfigure}
