@@ -1,7 +1,7 @@
 import pandas
 from SupervisedLearning.Experiments.GetData import append_result_col, get_data
 from sklearn.model_selection import KFold, StratifiedKFold
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
 import wandb
 from . import GetData as gd
 
@@ -20,7 +20,7 @@ label_dict = {
 }
 
 g_labels = [label_dict.get(i) for i in range(-1, 10)]
-binary_labels = ['yes', 'no']
+binary_labels = ['no', 'yes']
 
 def run_all_KF_experiments(classifier, classifier_name='', experiment_range=(0, 11), experiment_name='All kf experiments'):
     """Run 10 K-fold for each data label
@@ -89,7 +89,9 @@ def run_KFold_experiment(classifier, X, y, classifier_name='', classes_desc='all
         X, y = gd.balance_by_class(X, y, random_state=random_state, **kwargs)
 
     X = X.to_numpy()
-    y = y.to_numpy(dtype='int64')
+    y = y.to_numpy(dtype='int64').flatten()
+    if len(class_labels) == 2:
+        y = 1-y
 
     if stratified:
         # StratifiedKFold(n_splits=5, shuffle=False, random_state=None)
@@ -115,9 +117,17 @@ def run_KFold_experiment(classifier, X, y, classifier_name='', classes_desc='all
             wandb.sklearn.plot_classifier(classifier.get_classifier(), 
                 X_train, X_test, y_train, y_test, y_pred, y_probs, labels=class_labels, model_name=classifier_name)
             wandb.log({'Accuracy': accuracy_score(y_test, y_pred), 'Label_class': classes_desc})
+            if len(class_labels) == 2:
+                wandb.log({'Precision score': precision_score(y_test, y_pred, average=None)[1], 'Recall score': recall_score(
+                    y_test, y_pred, average=None)[1], 'F1_score': f1_score(y_test, y_pred, average=None)[1]})
+            else:
+                wandb.log({'Precision score': precision_score(y_test, y_pred, average='weighted'), 'Recall score': recall_score(
+                    y_test, y_pred, average='weighted'), 'F1_score': f1_score(y_test, y_pred, average='weighted')})
             #wandb.sklearn.plot_confusion_matrix(y_test, y_pred, class_labels)
 
     return train_scores, test_scores
+
+
 
 
 def run_all_test_set_experiments(classifier, classifier_name = '', experiment_range = (0, 11), experiment_name = 'All test set experiments', train_data_in_test=False, num_instances=4000):
@@ -158,6 +168,10 @@ def run_test_set_experiment(classifier, X_train, X_test, y_train, y_test, classi
         X_test = X_test.to_numpy()
         y_test = y_test.to_numpy(dtype='int64')
 
+        if len(class_labels) == 2:
+            y_train = 1 - y_train
+            y_test = 1 - y_test
+
         classifier.build_classifier(X_train, y_train)
         y_pred = classifier.prediction(X_test)
         y_probs = classifier.prediction_proba(X_test)
@@ -165,9 +179,13 @@ def run_test_set_experiment(classifier, X_train, X_test, y_train, y_test, classi
         test_scores = classifier.run_classifier(X_test, y_test)
         wandb.sklearn.plot_classifier(classifier.get_classifier(),
                                       X_train, X_test, y_train, y_test, y_pred, y_probs, labels=class_labels, model_name=classifier_name)
-        wandb.log({'Accuracy': accuracy_score(
-            y_test, y_pred), 'Label_class': classes_desc})
-
+        wandb.log({'Accuracy': accuracy_score(y_test, y_pred), 'Label_class': classes_desc})
+        if len(class_labels) == 2:
+            wandb.log({'Precision score': precision_score(y_test, y_pred, average=None)[1], 'Recall score': recall_score(
+                y_test, y_pred, average=None)[1], 'F1_score': f1_score(y_test, y_pred, average=None)[1]})
+        else:
+            wandb.log({'Precision score': precision_score(y_test, y_pred, average='weighted'), 'Recall score': recall_score(
+                y_test, y_pred, average='weighted'), 'F1_score': f1_score(y_test, y_pred, average='weighted')})
     return train_scores, test_scores
 
 
