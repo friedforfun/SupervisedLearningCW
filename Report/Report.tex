@@ -122,6 +122,7 @@ Convolutional Neural Networks worked phenomenally as expected, as they are widel
 \section{Variation in performance with varying learning parameters in Decision Trees}
 % ===================================== J48 =====================================
 \subsection{Optimising Hyperparameters}
+\cite{SklearnTreeDecisionTreeClassifier}
 
 Our hyperparameter optimization used Bayesian Optimization \cite{Configuration}. This gaussian process models the function and then chooses parameters to optimize by determining the probability of improvement according to the accuracy metric. 
 \par
@@ -173,6 +174,7 @@ See Parameter Importance (Figure \ref{J48_ParamImp1})
 
 \newpage
 \subsection{Random Forest}
+\cite{SklearnEnsembleRandomForestClassifier}
 \textbf{min\_samples\_split -} The minimum number of samples required to split an internal node \\
 \textbf{min\_samples\_leaf -} The minimum number of samples required to be at a leaf node.  \\
 \textbf{n\_estimators -} The number of trees in the forest.\\
@@ -200,6 +202,7 @@ See Parameter Importance (Figure \ref{RF_ParamImp1})
 \section{Variation in performance with varying learning parameters in Neural Networks}
 % ===================================== LINEAR CLASSIFIER =====================================
 \subsection{Linear Classifier}
+\cite{SklearnLinearModel}
 
 For a linear classifier we have decided to use logistic regression. 
 Shown below is the hyperparameter importance concerning the performance of Logistic Regression.
@@ -228,8 +231,19 @@ See Parameter Importance (Figure \ref{LC_ParamImp1})
 % ===================================== MULTILAYER PERCEPTRON =====================================
 \newpage
 \subsection{Multilayer Perceptron}
+\cite{SklearnNeuralNetwork}
 \label{MLPSection}
-\textcolor{red}{ADD PARAM DEFINITIONS}
+Our sweep on MLP indicated that the relu activation function provided the highest accuracy metric for all classes, our search computed this as the most important metric.
+However using this we observed severe overfitting on the speed limit signs in all experiments.
+
+\textbf{Activation -} Activation function for the hidden layer. \\
+\textbf{Alpha -} L2 penalty (regularization term) parameter. \\
+\textbf{Hidden\_layer\_sizes -} Number of neurons in each hidden layer. \\
+\textbf{Max\_iter -} Maximum number of iterations. The solver iterates until convergence \\
+\textbf{Solver -} The solver for weight optimization.\\
+\textbf{Learning\_rate -} The learning rate controls how quickly the model is adapted to the problem. \\
+
+
 \begin{table}[ht]
   \centering
   \begin{tabular}{|p{0.25\linewidth} | p{0.15 \linewidth} | p{0.45\linewidth}|} 
