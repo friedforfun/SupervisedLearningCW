@@ -40,10 +40,10 @@
 % ============ INTRODUCTION ============
 \newpage
 \section{Introduction}
-Based on our experience from coursework 1 we were aware that many machine learning models would perform poorly with a poorly balanced class distribution, we took measures to resolve this class distribution problem in coursework 1 and this resolved the overfitting issues.\\
+Based on our experience from Coursework 1 we were aware that many machine learning models would perform poorly with a poorly balanced class distribution, we took measures to resolve this class distribution problem in coursework 1 and this resolved the overfitting issues.\\
 We chose not to use these techniques so we could test the machine learning models with an inadequate dataset, to give us insight into how the different models perform in this situation.
 
-We wrote all experiments in Python 3, using SKlearn because it was easy to implement the models under an interface and pass the discrete models as parameters to “run experiment” functions, we used Tensorflow+Keras for the CNN implementation for ease of use, and speed of training (because of easy integration with cuda). \\
+We wrote all experiments in Python 3, using SKlearn because it was easy to implement the models under an interface and pass the discrete models as parameters to “run experiment” functions, we used Tensorflow+Keras for the CNN implementation for ease of use, and speed of training (because of easy integration with Cuda). \\
 To record and visualise experimental data we used Weights and Biases, this allowed us to perform experiments discretely and share all the results as they were generated.
 
 The purpose of these experiments is to explore how variance in data can affect machine learning models with respect to overfitting. \\
@@ -52,7 +52,7 @@ For all but the CNN we recorded the Accuracy, F1, Precision, and Recall metrics,
 
 The 4 experiments that were run are as follows:
 \begin{itemize}
-  \item K-fold - We used stratified K-fold because the class label distribution is so unbalanced each of our folds would not be guaranteed to have all classes represented in the training set, this would have unnecessarily skewed our results by testing on never-before-seen data, and would make drawing conclusions much harder. 
+  \item K-fold - We used stratified K-fold because the class label distribution is so unbalanced each of our folds would not be guaranteed to have all classes represented in the training set, this would have unnecessarily skewed our results by testing on never-before-seen data, and would make drawing conclusions much harder. (Figure \ref{StratKFold})
   \item Train-test - Used the provided datasets for training and for each label set a testing vector. 
   \item 4000 and 9000 instances moved from train to test - Same as train-test split above but with the difference being 4000  and 9000 instances moved from train to test. This allowed us to evaluate the model’s performance with different proportions resulting in less training samples.
 \end{itemize}
@@ -66,11 +66,9 @@ We used the same seed when moving the data from the training set to the testing 
 
 \par
 
-
-
 \newpage
 \section{Variation in performance with size of the training and testing sets}
-To investigate the variation in performance we selected a single class with a very poor class distribution; “Turn left”.
+To investigate the variation in performance we selected a single class with a very poor class distribution: “Turn left”.
 \subsection{Inspecting Turn Left results}
 The turn left dataset has an extremely small number of instances in its training dataset for 9000 moved to testing, Thus we would expect the worst prediction accuracy, in this case, the situation was so bad that our accuracy scores became misleading. Because the representation of ‘turn left’ was so poor in our dataset most of the classifiers simply predicted that there were no instances of turn left in the dataset and recorded a deceiving 97\% accuracy (because 97\% of the dataset is not in fact turn left). It turned out this problem appeared for all binary classifications with the Random Forest classifier and Multilayer perceptron.
 \par
@@ -109,7 +107,7 @@ An example distribution of labels between train (dark blue) and test (light blue
 
 Starting out we observed the results of J48, the issues are immediately clear, even in the experiment with the full training set J48 is poor at attempting to predict on this kind of data, when working with all classes it is unable to reliably distinguish between the speed limit signs, and a non-speed limit sign, but beyond that it consistently quite evenly classified with any class label.
 
-\begin{figure}[h]
+\begin{figure}[h!]
   \caption {J48 Confusion Matrix}
   \centering 
   \includegraphics[width = \textwidth, height = 0.3\textheight, keepaspectratio]{Images/J48ConfMat.png}
@@ -151,7 +149,7 @@ Our hyperparameter optimization used Bayesian Optimization \cite{Configuration}.
 \par
 We opted to use the ‘all classes’ dataset for these sweeps because in our preliminary experiments we noticed the worst prediction accuracy with 10 classes.
 
-Figure below shows high level overview of the MLP sweep, dark blue lines indicate lower accuracy and yellow had the highest accuracy. (See Figure \ref{MLPSection})
+The figure below shows a high-level overview of the MLP sweep, dark blue lines indicate lower accuracy and yellow had the highest accuracy. (See Figure \ref{MLPSection})
 
 \begin{center}
   \includegraphics [width = \textwidth, height = 0.3\textheight, keepaspectratio]{Images/MLP ParallelCoordGraph.png}
@@ -173,7 +171,7 @@ Discussed below is the hyperparameter \cite{SklearnTreeDecisionTreeClassifier} i
 \textbf{min\_weight\_fraction\_leaf -} The minimum number of samples required to be at a leaf node. \\
 \textbf{criterion\_value -}[‘Gini’,’Entropy’]: Measures the quality of the split.
 \textbf{max\_features -} [‘auto’,’log2’,’sqrt’] : max features considers the number of features when looking for the best split. Auto just picks the best result so had the same result as log2. \\
-\textbf{Splitter -} [‘best’, ‘random’]: The strategy used to choose the split at each node. 
+\textbf{splitter -} [‘best’, ‘random’]: The strategy used to choose the split at each node. 
 \newline
 
 \begin{table}[h]
@@ -260,12 +258,12 @@ See Parameter Importance (Figure \ref{LC_ParamImp1})
 Our sweep on MLP indicated that the relu activation function provided the highest accuracy metric for all classes, our search computed this as the most important metric.
 However using this we observed severe overfitting on the speed limit signs in all experiments.
 
-\textbf{Activation -} Activation function for the hidden layer. \\
-\textbf{Alpha -} L2 penalty (regularization term) parameter. \\
-\textbf{Hidden\_layer\_sizes -} Number of neurons in each hidden layer. \\
-\textbf{Max\_iter -} Maximum number of iterations. The solver iterates until convergence \\
-\textbf{Solver -} The solver for weight optimization.\\
-\textbf{Learning\_rate -} The learning rate controls how quickly the model is adapted to the problem. \\
+\textbf{activation -} Activation function for the hidden layer. \\
+\textbf{alpha -} L2 penalty (regularization term) parameter. \\
+\textbf{hidden\_layer\_sizes -} Number of neurons in each hidden layer. \\
+\textbf{max\_iter -} Maximum number of iterations. The solver iterates until convergence \\
+\textbf{solver -} The solver for weight optimization.\\
+\textbf{learning\_rate -} The learning rate controls how quickly the model is adapted to the problem. \\
 
 
 \begin{table}[ht]
@@ -274,8 +272,8 @@ However using this we observed severe overfitting on the speed limit signs in al
     \hline
     \textbf{Parameter} & \textbf{Type} & \textbf{Conclusion} \\ \hline
     alpha & float & When alpha increases the loss increases therefore we went with a relatively low number of 0.0005508. \\ \hline 
-    solver & string & ‘Lbfgs’ solver did provide the best accuracy consistently when compared to other solvers such as ‘adam’ and ‘sgd’ which supports the statement from \cite{SklearnNeuralNetwork} staying that ‘Lbfgs’ works best for small datasets. \\ \hline
-    max\_iter & int & Maximum number of iterations. We used 520 as it gives good results but that is the max so it converges earlier, as long as value above 200 is used will give high accuracy. \\ \hline
+    solver & string & ‘lbfgs’ solver did provide the best accuracy consistently when compared to other solvers such as ‘adam’ and ‘sgd’ which supports the statement from \cite{SklearnNeuralNetwork} staying that ‘Lbfgs’ works best for small datasets. \\ \hline
+    max\_iter & int & Maximum number of iterations. We used 520 as it gives good results but that is the max so it converges earlier, as long as a value above 200 is used will give high accuracy. \\ \hline
     activation & string & Contains the options: ‘identity’, ‘logistic’, ‘tanh’, ‘relu’. We found relu worked best for our use case  \\ \hline  
     learning\_rate & string & 'adaptive' achieves the highest accuracy while, 'constant' and 'invscaling' vary widely. \\ \hline  
     hidden\_layer\_sizes & tuple & 337 layers worked well for us. But this parameter is not very important as long at its above a fairly high value such as 200. \\ \hline
@@ -315,12 +313,17 @@ See Parameter Importance (Figure \ref{MLP_ParamImp1})
   \end{table}
  \end{center} 
 \subsubsection{Critical limitation of CNN experimental methodology:}
-We were unable to disable memoization between experiments over each loop, so all the parameters are restored between runs within a given experiment, consequently we noted only significant changes to the loss when training on all classes, after which convergence was achieved in a single epoch. We attempted to clear the model parameters, clear the GPU memory, and model save the randomly initialised parameters and load them back in between experiments but could not prevent the CNN model using data encoded from previous experiments. This does invalidate our results, when compared to the discrete experiments in the previous sections, however this can be a demonstrable advantage of a CNN, in this situation it consistently correctly classifies the images despite changing the dimensions of the output layer and the classification targets (albeit on the same dataset).
-
+We were unable to disable memoization between experiments over each loop, so all the parameters are restored between runs within a given experiment, consequently, we noted only significant changes to the loss when training on all classes, after which convergence was achieved in a single epoch. We attempted to clear the model parameters, clear the GPU memory, and model save the randomly initialised parameters and load them back in between experiments but could not prevent the CNN model using data encoded from previous experiments. This does invalidate our results when compared to the discrete experiments in the previous sections, however, this can be a demonstrable advantage of a CNN, in this situation it consistently correctly classifies the images despite changing the dimensions of the output layer and the classification targets (albeit on the same dataset).
 
 During all experiments with training and testing data, at worst our CNN scored an accuracy of 97\% on the test dataset when classifying all classes, the CNN was capable of correct classification even when 9000 instances were moved from the training set to the testing set.
 
-The CNN was unsurprisingly the best performing classifier, In many of the kfold experiments the CNN managed an accuracy of 100\%, but this could be due in part to the memoization effect between experiments, this is particularly noticeable on the kfold experiments.
+The CNN was unsurprisingly the best performing classifier, In many of the k-fold experiments the CNN managed an accuracy of 100\%, but this could be due in part to the memoization effect between experiments, this is particularly noticeable on the k-fold experiments.
+
+The reason we expected the best results for the CNN is that we took measures to reduce overfitting, first, we used 2 dropout layers to reduce overfitting, by regularizing the model we try and encourage each neuron to be more independently useful.
+Using the Keras Dataflow class, we produced an augmented dataset, this allowed us to increase the representation of the least represented sign classes, by providing random variance within a zoom, rotation and shift range, effectively providing an infinite stream of data to train with.
+
+For further experiments, it would be interesting to investigate the effects of changing the parameters of the Dataflow class to train with a wider variety of data.
+
 
 
 \newpage
@@ -337,7 +340,7 @@ Therefore J48 is very picky and doesn't think many signs are cycle route ahead s
 With the default test set, J48 provides a precision, recall and f1 scores of 0 for the right turn, left turn, beware pedestrian crossing and speed limit 20 classes the reason is due to 0 true positive classifications.When we investigate why this is for the beware pedestrian crossing class, we noticed the data has a heavy skew of class proportions towards ‘No’ with very few instances of ‘Yes’ found. In fact, this is the case for all of the class labels with scores of 0 for precision, recall and f1.
 
 \subsection{Random Forest \& MLP}
-Both random forest and MLP suffered overfit issues particularly with binary class labels; they scored 0 for precision, recall, and F1 in all experiments. We hypothesize this is caused by the same reasons described in Section 1. Likewise all classes perform poorly the model classifies every class as exclusively either speed limit 30, 50, and 70 in the training and testing data sets, the k-fold experiments simply classifies all classes as speed limit 50; the most well represented class in our dataset. 
+Both random forest and MLP suffered overfit issues particularly with binary class labels; they scored 0 for precision, recall, and F1 in all experiments. We hypothesize this is caused by the same reasons described in Section 1. Likewise all classes perform poorly the model classifies every class as exclusively either speed limit 30, 50, and 70 in the training and testing data sets, the k-fold experiments simply classifies all classes as speed limit 50; the most well-represented class in our dataset. 
 
 \subsection{Logistic Regresssion}
 Logistic Regression is excellent at predicting classes for the dataset, which contains all signs, which is not easy to do. Logistic Regression has relatively good precision and recall when compared to other classifiers with 89 for both. This means it is very good at predicting all different signs.
