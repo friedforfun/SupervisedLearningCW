@@ -50,6 +50,16 @@ The purpose of these experiments is to explore how variance in data can affect m
 To do this we ran 4 Experiments with each model, covering two machine learning paradigms, we could then compare the behaviour, and try to gain insight into if and why they perform so poorly with data using bad class distributions.\\
 For all but the CNN we recorded the Accuracy, F1, Precision, and Recall metrics, additionally we plotted the confusion matrix, precision-recall curves, ROC curve, class proportions, calibration curve, and learning curve.
 
+The 4 experiments that were run are as follows:
+\begin{itemize}
+  \item K-fold - We used stratified K-fold because the class label distribution is so unbalanced each of our folds would not be guaranteed to have all classes represented in the training set, this would have unnecessarily skewed our results by testing on never-before-seen data, and would make drawing conclusions much harder. 
+  \item Train-test - Used the provided datasets for training and for each label set a testing vector. 
+  \item 4000 and 9000 instances moved from train to test - Same as train-test split above but with the difference being 4000  and 9000 instances moved from train to test. This allowed us to evaluate the model’s performance with different proportions resulting in less training samples.
+\end{itemize}
+
+We used the same seed when moving the data from the training set to the testing set, so all experiments for a given classifier used the same training and testing data.
+
+
 
 \subsection{Methodology}
 We used the same seed when moving the data from the training set to the testing set, so all experiments for a given classifier used the same training and testing data.
@@ -117,8 +127,7 @@ With all the classifiers except Logistic Regression and the CNN we see the same 
 \end{figure}
 
 \newpage
-\section{Variation in performance with the change in the learning paradigm (Decision Trees versus
-Neural Nets)}
+\section{Variation in performance with the change in the learning paradigm}
 \begin{itemize}
   \item Decision trees performed comparatively poorly, particularly when the training data was reduced.
   \item Multilayer Perceptron had overfitting issues, Logistic Regression was the best, aside from the CNN
@@ -127,7 +136,7 @@ We have found decision trees performed very poorly particularly when the trainin
 \par
 However Logistic Regression performed considerably better, it was actually the best performer from all classification techniques we have used and tested, aside from the CNN. 
 \par
-Logistic Regression gives the best results because the benefit of logistic regression is its interpretability as it understands which pixels are important to determine what class an image belongs to.
+Logistic Regression has given best results thus it was less vulnerable to poor class distributions and dealt nicely with overfitted data. A benefit of logistic regression is its interpretability as it understands which pixels are important to determinate what class an image belongs to.
 \par
 Convolutional Neural Networks worked phenomenally as expected, as they are widely used in image classification.
 
@@ -327,11 +336,8 @@ Therefore J48 is very picky and doesn't think many signs are cycle route ahead s
 \par
 With the default test set, J48 provides a precision, recall and f1 scores of 0 for the right turn, left turn, beware pedestrian crossing and speed limit 20 classes the reason is due to 0 true positive classifications.When we investigate why this is for the beware pedestrian crossing class, we noticed the data has a heavy skew of class proportions towards ‘No’ with very few instances of ‘Yes’ found. In fact, this is the case for all of the class labels with scores of 0 for precision, recall and f1.
 
-\subsection{Random Forest}
-We found random forest to be one of the worst performers overall with the training and test sets. With binary class labels it scored 0 for precision, recall, and F1 in all experiments. We hypothesize this is caused by the same reasons described in section [1]. Likewise all classes perform poorly by classifying all classes as exclusively either speed limit 30, 50, and 70 in the training and testing data sets, k folds simply classifies all classes as speed limit 50; the most well represented classes in our dataset. 
-
-\subsection{Multi-Layer Perceptron}
-{\huge{\textcolor{red}{NEEDS COMPLETED}}}
+\subsection{Random Forest \& MLP}
+Both random forest and MLP suffered overfit issues particularly with binary class labels; they scored 0 for precision, recall, and F1 in all experiments. We hypothesize this is caused by the same reasons described in Section 1. Likewise all classes perform poorly the model classifies every class as exclusively either speed limit 30, 50, and 70 in the training and testing data sets, the k-fold experiments simply classifies all classes as speed limit 50; the most well represented class in our dataset. 
 
 \subsection{Logistic Regresssion}
 Logistic Regression is excellent at predicting classes for the dataset, which contains all signs, which is not easy to do. Logistic Regression has relatively good precision and recall when compared to other classifiers with 89 for both. This means it is very good at predicting all different signs.
