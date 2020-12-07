@@ -25,7 +25,7 @@
 \begin{document}
 
 % ============ TITLE PAGE ============
-\title{\huge Data Mining \& Machine Learning F20DL} 
+\title{\huge Data Mining \& Machine Learning F20DL \\ Coursework 2} 
 % \\ {\small{\url{ }}}}
 \author{Group 4\\Lewis Wilson, Sam Fay-Hunt, Kamil Szymczak, Chun Man }
 \date{\today}
@@ -40,16 +40,30 @@
 % ============ INTRODUCTION ============
 \newpage
 \section{Introduction}
-For both decision trees and neural networks, we used Weights and Biases (\url{https://wandb.ai/home}) to visualise these experiments which we used to record and organise the experiment data shown the graphs shown in this document.
+Based on our experience from coursework 1 we were aware that many machine learning models would perform poorly with a poorly balanced class distribution, we took measures to resolve this class distribution problem in coursework 1 and this resolved the overfitting issues.\\
+We chose not to use these techniques so we could test the machine learning models with an inadequate dataset, to give us insight into how the different models perform in this situation.
+
+We wrote all experiments in Python 3, using SKlearn because it was easy to implement the models under an interface and pass the discrete models as parameters to “run experiment” functions, we used Tensorflow+Keras for the CNN implementation for ease of use, and speed of training (because of easy integration with cuda). \\
+To record and visualise experimental data we used Weights and Biases, this allowed us to perform experiments discretely and share all the results as they were generated.
+
+The purpose of these experiments is to explore how variance in data can affect machine learning models with respect to overfitting. \\
+To do this we ran 4 Experiments with each model, covering two machine learning paradigms, we could then compare the behaviour, and try to gain insight into if and why they perform so poorly with data using bad class distributions.\\
+For all but the CNN we recorded the Accuracy, F1, Precision, and Recall metrics, additionally we plotted the confusion matrix, precision-recall curves, ROC curve, class proportions, calibration curve, and learning curve.
+
+
+\subsection{Methodology}
+We used the same seed when moving the data from the training set to the testing set, so all experiments for a given classifier used the same training and testing data.
+
+\par
 
 
 
 \newpage
 \section{Variation in performance with size of the training and testing sets}
-\subsection{Methodology}
-We used the same seed when moving the data from the training set to the testing set, so all experiments for a given classifier used the same training and testing data.
-\subsection{Turn left deep dive}
-The turn left dataset has an extremely small number of instances in its training dataset for 9000 moved to testing, Thus we would expect the worst prediction accuracy, in this case, the situation was so bad that our accuracy scores became misleading. Because the representation of ‘turn left’ was so poor in our dataset most of the classifiers simply predicted that there were no instances of turn left in the dataset and recorded a deceiving 97\% accuracy (because 97\% of the dataset is not in fact turn left). In fact this problem appeared for all binary classifications with the Random Forest classifier.
+To investigate the variation in performance we selected a single class with a very poor class distribution; “Turn left”.
+\subsection{Inspecting Turn Left results}
+The turn left dataset has an extremely small number of instances in its training dataset for 9000 moved to testing, Thus we would expect the worst prediction accuracy, in this case, the situation was so bad that our accuracy scores became misleading. Because the representation of ‘turn left’ was so poor in our dataset most of the classifiers simply predicted that there were no instances of turn left in the dataset and recorded a deceiving 97\% accuracy (because 97\% of the dataset is not in fact turn left). It turned out this problem appeared for all binary classifications with the Random Forest classifier and Multilayer perceptron.
+\par
 The only classifiers that did not exhibit this behaviour were the Logistic Regression (LR) and Convolutional Neural Network classifiers (CNN). CNN scored a staggering 99.9\% accuracy with the same minuscule training data, while LR managed 98.3\% with 200 false negatives, 5 false positives and 60 true positives.
 \newline
 \par
@@ -61,21 +75,21 @@ The only classifiers that did not exhibit this behaviour were the Logistic Regre
 An example distribution of labels between train (dark blue) and test (light blue), for the Beware cycle route ahead class. 
 
 \newpage
-\subsection{Original train \& test sets}
+
 \begin{figure}[h]
   \caption {Class proportions in target variable}
   \centering 
   \includegraphics[width = \textwidth, height = 0.5\textheight, keepaspectratio]{Images/Sec1Original.png}
 \end{figure}
 
-\subsection{4000 moved}
+
 \begin{figure}[h]
   \caption {Class proportions in target variable}
   \centering 
   \includegraphics[width = \textwidth, height = 0.5\textheight, keepaspectratio]{Images/Sec1-4k.png}
 \end{figure}
 
-\subsection{9000 moved}
+
 \begin{figure}[h]
   \caption {Class proportions in target variable}
   \centering 
@@ -83,7 +97,7 @@ An example distribution of labels between train (dark blue) and test (light blue
 \end{figure}
 
 
-Starting out we observed the results of J48, the issues are immediately clear, even in the experiment with the full training set J48 is poor at attempting to predict on this kind of data, when working with all classes it is unable to reliably distinguish between the different speed limit signs, and the other signs consistently are quite evenly classified with any class label.
+Starting out we observed the results of J48, the issues are immediately clear, even in the experiment with the full training set J48 is poor at attempting to predict on this kind of data, when working with all classes it is unable to reliably distinguish between the speed limit signs, and a non-speed limit sign, but beyond that it consistently quite evenly classified with any class label.
 
 \begin{figure}[h]
   \caption {J48 Confusion Matrix}
@@ -91,9 +105,9 @@ Starting out we observed the results of J48, the issues are immediately clear, e
   \includegraphics[width = \textwidth, height = 0.3\textheight, keepaspectratio]{Images/J48ConfMat.png}
 \end{figure}
 \FloatBarrier
-As the test set grows we can observe a similar story, however the classifier gets substantially worse at distinguishing between speed limit signs and other signs because the representation of those signs in the dataset gets very low.
+As the test set grows we can observe a similar story, the J48 classifier gets substantially worse at distinguishing between speed limit signs and other signs because the representation of those signs in the dataset gets very low.
 
-With all the classifiers except Logistic Regression we see the same story, Multi-layer perceptron and random forest particularly suffers from this poor class representation issue in the data. We can see for figure [x] that the Multilayer perceptron assigns most labels for 3 classes: Speed limit 30, 50, 70. It also assigns a small number of labels for speed limit 70.
+With all the classifiers except Logistic Regression and the CNN we see the same story, Multi-layer perceptron and random forest particularly suffers from this poor class representation issue in the data. We can see for figure [x] that the Multilayer perceptron assigns most labels for 3 classes: Speed limit 30, 50, 70. It also assigns a small number of labels for speed limit 70.
 
 
 \begin{figure}[h]
@@ -128,14 +142,13 @@ Our hyperparameter optimization used Bayesian Optimization \cite{Configuration}.
 \par
 We opted to use the ‘all classes’ dataset for these sweeps because in our preliminary experiments we noticed the worst prediction accuracy with 10 classes.
 
-Figure below shows high level overview of the MLP sweep, dark blue lines indicate lower accuracy and yellow had the highest accuracy. (See \ref{MLPSection})
+Figure below shows high level overview of the MLP sweep, dark blue lines indicate lower accuracy and yellow had the highest accuracy. (See Figure \ref{MLPSection})
 
 \begin{center}
   \includegraphics [width = \textwidth, height = 0.3\textheight, keepaspectratio]{Images/MLP ParallelCoordGraph.png}
 \end{center}
 
-\textcolor{red}{\textbf{To evaluate the hyperparameters we collected and evaluated the linear correlation between the hyperparameter and the accuracy, and also a feature importance metric provided by weights and biases, this metric is computed by training a random forest with the hyperparameters as inputs and the accuracy as the target output, the feature importances are then extracted from the random forest. \url{https://docs.wandb.com/app/features/panels/parameter-importance}
-}}
+For the evaluation of our hyperparameters, we gathered data on the linear correlation between each hyperparameter and their accuracy. THe feature importance is calculated from training a random forest with hyperparameters and its metrics. \cite{ParameterImportance}
 \par
 The feature importance metric is useful to identify the features that have a larger impact on the output of the model, coupled with correlation we can find the direction of the relationship. It may be the case that a very important feature is extremely bad for the result, in this case we will see a strong negative correlation, this information helps us hone in on the best hyperparameters to use to maximise accuracy.
 \par
@@ -175,6 +188,7 @@ See Parameter Importance (Figure \ref{J48_ParamImp1})
 \newpage
 \subsection{Random Forest}
 \cite{SklearnEnsembleRandomForestClassifier}
+\par
 \textbf{min\_samples\_split -} The minimum number of samples required to split an internal node \\
 \textbf{min\_samples\_leaf -} The minimum number of samples required to be at a leaf node.  \\
 \textbf{n\_estimators -} The number of trees in the forest.\\
@@ -232,6 +246,7 @@ See Parameter Importance (Figure \ref{LC_ParamImp1})
 \newpage
 \subsection{Multilayer Perceptron}
 \cite{SklearnNeuralNetwork}
+\par
 \label{MLPSection}
 Our sweep on MLP indicated that the relu activation function provided the highest accuracy metric for all classes, our search computed this as the most important metric.
 However using this we observed severe overfitting on the speed limit signs in all experiments.
@@ -249,12 +264,12 @@ However using this we observed severe overfitting on the speed limit signs in al
   \begin{tabular}{|p{0.25\linewidth} | p{0.15 \linewidth} | p{0.45\linewidth}|} 
     \hline
     \textbf{Parameter} & \textbf{Type} & \textbf{Conclusion} \\ \hline
-    alpha & float & This has a positive correlation to accuracy as higher alpha value equates to higher accuracy. \\ \hline 
-    solver & string & ‘Lbfgs’ solver did provide the best accuracy consistently when compared to other solvers such as ‘adam’ and ‘sgd’ which supports the statement from [X002] staying that ‘Lbfgs’ works best for small datasets. \\ \hline
-    max\_iter & int & The maximum number of iterations - In general, higher accuracy can be achieved with a larger amount of max iterations. \\ \hline
-    activation & string & Out of the four activation functions (relu, tanh, identity and logistic), relu is the only one with a positive correlation, giving the highest accuracy overall. \\ \hline  
+    alpha & float & When alpha increases the loss increases therefore we went with a relatively low number of 0.0005508. \\ \hline 
+    solver & string & ‘Lbfgs’ solver did provide the best accuracy consistently when compared to other solvers such as ‘adam’ and ‘sgd’ which supports the statement from \cite{SklearnNeuralNetwork} staying that ‘Lbfgs’ works best for small datasets. \\ \hline
+    max\_iter & int & Maximum number of iterations. We used 520 as it gives good results but that is the max so it converges earlier, as long as value above 200 is used will give high accuracy. \\ \hline
+    activation & string & Contains the options: ‘identity’, ‘logistic’, ‘tanh’, ‘relu’. We found relu worked best for our use case  \\ \hline  
     learning\_rate & string & 'adaptive' achieves the highest accuracy while, 'constant' and 'invscaling' vary widely. \\ \hline  
-    hidden\_layer\_sizes & tuple & Has a negative correlation - the number neurons in the n-th hidden layer has no effect on accuracy. \\ \hline
+    hidden\_layer\_sizes & tuple & 337 layers worked well for us. But this parameter is not very important as long at its above a fairly high value such as 200. \\ \hline
   \end{tabular}
 \end{table}\label{MLP_Analysis_Table}
 \FloatBarrier
@@ -312,7 +327,18 @@ Therefore J48 is very picky and doesn't think many signs are cycle route ahead s
 \par
 With the default test set, J48 provides a precision, recall and f1 scores of 0 for the right turn, left turn, beware pedestrian crossing and speed limit 20 classes the reason is due to 0 true positive classifications.When we investigate why this is for the beware pedestrian crossing class, we noticed the data has a heavy skew of class proportions towards ‘No’ with very few instances of ‘Yes’ found. In fact, this is the case for all of the class labels with scores of 0 for precision, recall and f1.
 
+\subsection{Random Forest}
+We found random forest to be one of the worst performers overall with the training and test sets. With binary class labels it scored 0 for precision, recall, and F1 in all experiments. We hypothesize this is caused by the same reasons described in section [1]. Likewise all classes perform poorly by classifying all classes as exclusively either speed limit 30, 50, and 70 in the training and testing data sets, k folds simply classifies all classes as speed limit 50; the most well represented classes in our dataset. 
 
+\subsection{Multi-Layer Perceptron}
+{\huge{\textcolor{red}{NEEDS COMPLETED}}}
+
+\subsection{Logistic Regresssion}
+Logistic Regression is excellent at predicting classes for the dataset, which contains all signs, which is not easy to do. Logistic Regression has relatively good precision and recall when compared to other classifiers with 89 for both. This means it is very good at predicting all different signs.
+
+\begin{center}
+  \includegraphics [width = \textwidth, height = 0.3\textheight, keepaspectratio]{Images/LRConfMat.png}
+\end{center}
 
 % ============ APPENDICES BEGINNING ============================================
 \pagebreak
@@ -501,10 +527,26 @@ As a team we are happy with everyone's contributions to the project. All team me
   \centering 
   \includegraphics[width = \textwidth, height = \textwidth, keepaspectratio]{Images/MLP ParallelCoordGraph.png}
 \end{figure}
+\FloatBarrier
 
-\section{R41} \label{R41}
-\url{https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html}
+\begin{figure}[h]
+  \caption {Data with evenly split groups} \label{DataWWithEvenlySplitGroups}
+  \centering 
+  \includegraphics[width = \textwidth, height = 0.5\textwidth, keepaspectratio]{Images/DataWithEvenlySplitGroups.png}
+\end{figure}
 
+
+\begin{figure}[h]
+  \caption {KFold} \label{KFoldVisualised}
+  \centering 
+  \includegraphics[width = \textwidth, height = 0.5\textwidth, keepaspectratio]{Images/KFold.png}
+\end{figure}
+
+\begin{figure}[h]
+  \caption {Stratified KFolds} \label{StratKFold}
+  \centering 
+  \includegraphics[width = \textwidth, height = 0.5\textwidth, keepaspectratio]{Images/StratKFold.png}
+\end{figure}
 \FloatBarrier
 % =================== END APPENDIX ===================
 \end{appendices}
