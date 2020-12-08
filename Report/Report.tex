@@ -66,7 +66,7 @@ We used the same seed when moving the data from the training set to the testing 
   \caption {Stratified KFolds, Visualised class distributions in each fold (Group)} \label{StratKFold}
 \end{figure}
 
-\section{Variation in performance with size of the training and testing sets}
+\section{Variation in performance with size of the training and testing sets} \label{sec:VarPerfTrainTestSets}
 To investigate the variation in performance we began by looking closely at a single class with a very poor class distribution: “Turn left”.
 
 The turn left dataset has an extremely small number of instances in its training dataset for 9000 moved to testing, Thus we would expect the worst prediction accuracy, in this case, the situation was so bad that our accuracy scores became misleading. Because the representation of ‘turn left’ was so poor in our dataset most of the classifiers simply predicted that there were no instances of turn left in the dataset and recorded a deceiving 97\% accuracy (because 97\% of the dataset is not in fact turn left). It turned out this problem appeared for all binary classifications with the Random Forest classifier and Multilayer perceptron.
@@ -182,10 +182,7 @@ Using the Keras Dataflow class, we produced an augmented dataset, this allowed u
 For further experiments, it would be interesting to investigate the effects of changing the parameters of the ImageDataGenerator class to train with a wider variety of data.
 
 \newpage
-\section{Variation in performance with varying learning parameters in Decision Trees}
-% ===================================== J48 =====================================
-\subsection{Optimising Hyperparameters}
-\autocite{SklearnTreeDecisionTreeClassifier}
+\section{Methodology for Optimising hyperparameters}
 
 Our hyperparameter optimization used Bayesian Optimization \cite{Configuration}. This gaussian process models the function and then chooses parameters to optimize by determining the probability of improvement according to the accuracy metric. 
 \par
@@ -206,6 +203,9 @@ The feature importance metric is useful to identify the features that have a lar
 \par
 This however, caused the models to instead maximise hyperparameters tendency to overfit this very imbalanced dataset.
 \newpage
+\section{Variation in performance with varying learning parameters in Decision Trees}
+% ===================================== J48 =====================================
+
 \subsection{J48}
 
 Discussed below is the hyperparameter \cite{SklearnTreeDecisionTreeClassifier} importance concerning the performance of J48 trees:
@@ -363,13 +363,13 @@ Therefore J48 is very picky and doesn't think many signs are cycle route ahead s
 With the default test set, J48 provides a precision, recall and f1 scores of 0 for the right turn, left turn, beware pedestrian crossing and speed limit 20 classes the reason is due to 0 true positive classifications. When we investigate why this is for the beware pedestrian crossing class, we noticed the data has a heavy skew of class proportions towards ‘No’ with very few instances of ‘Yes’ found. In fact, this is the case for all of the class labels with scores of 0 for precision, recall and f1.
 
 \subsection{Random Forest \& MLP}
-Both random forest and MLP suffered overfit issues particularly with binary class labels; they scored 0 for precision, recall, and F1 in all experiments. We hypothesize this is caused by the same reasons described in Section 1. Likewise, all classes perform poorly the model classifies every class as exclusively either speed limit 30, 50, and 70 in the training and testing data sets, the k-fold experiments simply classifies all classes as speed limit 50; the most well-represented class in our dataset. 
+Both random forest and MLP suffered overfit issues particularly with binary class labels; they scored 0 for precision, recall, and F1 in all experiments. We hypothesize this is caused by the same reasons described in Section \ref{sec:VarPerfTrainTestSets}. Likewise, all classes perform poorly the model classifies every class as exclusively either speed limit 30, 50, and 70 in the training and testing data sets, the k-fold experiments simply classifies all classes as speed limit 50; the most well-represented class in our dataset. 
 
 \subsection{Logistic Regresssion}
 Logistic Regression is excellent at predicting classes for the dataset, which contains all signs, which is not easy to do. Logistic Regression has relatively good precision and recall when compared to other classifiers with 89 for both. This means it is very good at predicting all different signs.
 
 \begin{center}
-  \includegraphics [width = \textwidth, height = 0.3\textheight, keepaspectratio]{Images/LRConfMat.png}
+  \includegraphics [width = \textwidth, height = 0.5\textheight, keepaspectratio]{Images/LRConfMat.png}
 \end{center}
 
 % ============ APPENDICES BEGINNING ============================================
