@@ -398,12 +398,12 @@ With the default test set, J48 provides a precision, recall and f1 scores of 0 f
 Both random forest and MLP suffered overfit issues particularly with binary class labels; they scored 0 for precision, recall, and F1 in all experiments. We hypothesize this is caused by the same reasons described in Section \ref{sec:VarPerfTrainTestSets}. Likewise, all classes perform poorly the model classifies every class as exclusively either speed limit 30, 50, and 70 in the training and testing data sets, the k-fold experiments simply classifies all classes as speed limit 50; the most well-represented class in our dataset. 
 
 \subsection{Logistic Regresssion}
-Logistic Regression is excellent at predicting classes for the dataset, which contains all signs, which is not easy to do. Logistic Regression has relatively good precision and recall when compared to other classifiers with 89 for both. This means it is very good at predicting all different signs.
+Logistic Regression is excellent at predicting classes for the dataset, which contains all signs, which is not easy to do. Logistic Regression has relatively good precision and recall when compared to other classifiers with 89 for both. This means it is very good at predicting all different signs (See Figure \ref{LogRegConfMat}).
 
-\begin{center}
-  \includegraphics [width = \textwidth, height = 0.5\textheight, keepaspectratio]{Images/LRConfMat.png}
-\end{center}
-
+\begin{figure}
+  \centering
+  \includegraphics [width = \textwidth, height = 0.5\textheight, keepaspectratio]{Images/LRConfMat.png} \caption{Logistic regression confusion matrix all classes} \label{LogRegConfMat}
+\end{figure}
 % ============ APPENDICES BEGINNING ============================================
 \pagebreak
 \appendix
@@ -490,7 +490,7 @@ The following is a list of the links to all of our experimental data.
 \section{J48}
 
 \subsection{J48 Parameter Importance}
-  \begin{table}[ht]
+  \begin{table}[ht]\caption{J48 Parameter metrics}
     \centering
     \begin{tabular}{|p{0.3\linewidth} | p{0.3\linewidth}| p{0.3\linewidth}|} 
       \hline
@@ -533,7 +533,7 @@ The following is a list of the links to all of our experimental data.
 \section{Random Forest}
 
 \subsection{Random Forest Parameter Importance}
-  \begin{table}[ht]
+  \begin{table}[ht]\caption{Random Forest Parameter metrics}
     \centering
     \begin{tabular}{|p{0.3\linewidth} | p{0.3\linewidth}| p{0.3\linewidth}|} 
       \hline
@@ -571,7 +571,7 @@ The following is a list of the links to all of our experimental data.
 \section{Linear Classifier}
 
 \subsection{Linear Classifier Parameter Importance}
-  \begin{table}[ht]
+  \begin{table}[ht]\caption{Linear Classifier Parameter metrics}
     \centering
     \begin{tabular}{|p{0.3\linewidth} | p{0.3\linewidth}| p{0.3\linewidth}|} 
       \hline
@@ -609,7 +609,7 @@ The following is a list of the links to all of our experimental data.
 \section{Multilayer Perceptron}
 
 \subsection{Multilayer Perceptron Parameter Importance}
-  \begin{table}[ht]
+  \begin{table}[ht]\caption{MLP Parameter metrics}
     \centering
     \begin{tabular}{|p{0.3\linewidth} | p{0.3\linewidth}| p{0.3\linewidth}|} 
       \hline
