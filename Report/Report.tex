@@ -45,7 +45,7 @@ Based on our experience from Coursework 1 we were aware that many machine learni
 We chose not to use these techniques so we could test the machine learning models with an inadequate dataset, to give us insight into how the different models perform in this situation.
 
 We wrote all experiments in Python 3, using SKlearn because it was easy to implement the models under an interface and pass the discrete models as parameters to “run experiment” functions, we used Tensorflow+Keras for the CNN implementation for ease of use, and speed of training (because of easy integration with Cuda). 
-To record and visualise experimental data we used Weights and Biases, this allowed us to perform experiments discretely and share all the results as they were generated.
+To record and visualise experimental data we used Weights and Biases, this allowed us to perform experiments discretely and share all the results as they were generated.\cite{WeightsBiases}
 
 The purpose of these experiments is to explore how variances in data, learning paradigm and hyperparameters can affect machine learning model performance with respect to overfitting. 
 To do this we ran 4 Experiments with each model, covering two machine learning paradigms, we could then compare the behaviour, and try to gain insight into if and why they perform so poorly with data using bad class distributions.
@@ -71,7 +71,7 @@ To investigate the variation in performance we began by looking closely at a sin
 
 The turn left dataset has an extremely small number of instances in its training dataset for 9000 moved to testing, Thus we would expect the worst prediction accuracy, in this case, the situation was so bad that our accuracy scores became misleading. Because the representation of ‘turn left’ was so poor in our dataset most of the classifiers simply predicted that there were no instances of turn left in the dataset and recorded a deceiving 97\% accuracy (because 97\% of the dataset is not in fact turn left). It turned out this problem appeared for all binary classifications with the Random Forest classifier and Multilayer perceptron.
 \par
-The only classifiers that did not exhibit this behaviour were the Logistic Regression (LR) and Convolutional Neural Network classifiers (CNN). CNN scored a staggering 99.9\% accuracy with the same minuscule training data, while LR managed 98.3\% with 200 false negatives, 5 false positives and 60 true positives.
+The only classifiers that did not exhibit this behaviour were the Logistic Regression (LR) and Convolutional Neural Network classifiers (CNN). CNN scored a staggering 99.9\% accuracy with the same minuscule training data (without out enhancements to reduce overfitting, see Section x), while LR managed 98.3\% with 200 false negatives, 5 false positives and 60 true positives.
 \newline
 \par
 \begin{figure}[H]
@@ -141,6 +141,45 @@ Logistic Regression has given best results thus it was less vulnerable to poor c
 \par
 Convolutional Neural Networks worked phenomenally as expected, as they are widely used in image classification.
 
+\newpage
+\subsection{Convolutional Neural Networks}
+
+
+  \begin{table}[h]\caption {Shape of custom CNN}
+    \centering
+    \begin{tabular}{@{}lll@{}} 
+    \toprule
+    Layer type & Output Shape & Param \# \\ \midrule
+    conv2D & (None, 48, 48, 75) & 750 \\ \midrule
+    BatchNormalization & (None, 48, 48, 75) & 300 \\ \midrule
+    MaxPooling2D & (None, 24, 24, 75) & 0 \\ \midrule
+    Conv2D & (None, 24, 24, 50) & 33800 \\ \midrule
+    Dropout & (None, 24, 24, 50) & 0 \\ \midrule
+    BatchNormalization & (None, 24, 24, 50) & 200 \\ \midrule
+    MaxPooling2D & (None, 12, 12, 50) & 0 \\ \midrule
+    Conv2D & (None, 12, 12, 25) & 11275 \\ \midrule
+    BatchNormalization & (None, 12, 12, 25) & 100 \\ \midrule
+    MaxPooling2D & (None, 6, 6, 25) & 0 \\ \midrule
+    Flatten & (None, 900) & 0 \\ \midrule
+    Dense & (None, 512) & 461312 \\ \midrule
+    Dense & (None, 512) & 262656 \\ \midrule
+    Dropout & (None, 512) & 0 \\ \midrule
+    Dense & (None, 10) & 5130 \\ \bottomrule
+    \end{tabular}
+  \end{table}
+
+
+\subsubsection{Critical limitation of CNN experimental methodology:}
+We were unable to disable memoization between experiments over each loop, so all the parameters are restored between runs within a given experiment, consequently, we noted only significant changes to the loss when training on all classes, after which convergence was achieved in a single epoch. We attempted to clear the model parameters, clear the GPU memory, and model saves the randomly initialised parameters and load them back in between experiments but could not prevent the CNN model using data encoded from previous experiments. This does invalidate our results when compared to the discrete experiments in the previous sections, however, this can be a demonstrable advantage of a CNN, in this situation it consistently correctly classifies the images despite changing the dimensions of the output layer and the classification targets (albeit on the same dataset).
+
+During all experiments with training and testing data, at worst our CNN scored an accuracy of 97\% on the test dataset when classifying all classes, the CNN was capable of correct classification even when 9000 instances were moved from the training set to the testing set.
+
+The CNN was unsurprisingly the best performing classifier, In many of the k-fold experiments the CNN managed an accuracy of 100\%, but this could be due in part to the memoization effect between experiments, this is particularly noticeable on the k-fold experiments.
+
+The reason we expected the best results for the CNN is that we took measures to reduce overfitting, first, we used 2 dropout layers to reduce overfitting, by regularizing the model we try and encourage each neuron to be more independently useful.
+Using the Keras Dataflow class, we produced an augmented dataset, this allowed us to increase the representation of the least represented sign classes, by providing random variance within a zoom, rotation and shift range, effectively providing an infinite stream of data to train with.
+
+For further experiments, it would be interesting to investigate the effects of changing the parameters of the ImageDataGenerator class to train with a wider variety of data.
 
 \newpage
 \section{Variation in performance with varying learning parameters in Decision Trees}
@@ -175,7 +214,7 @@ Discussed below is the hyperparameter \cite{SklearnTreeDecisionTreeClassifier} i
 \textbf{min\_impurity\_decrease -} Splits a node if this split induces a decrease of the impurity greater than or equal to this value. \\
 \textbf{min\_samples\_leaf -} the minimum number of samples to be considered a leaf. \\
 \textbf{min\_weight\_fraction\_leaf -} The minimum number of samples required to be at a leaf node. \\
-\textbf{criterion\_value -}[‘Gini’,’Entropy’]: Measures the quality of the split.
+\textbf{criterion\_value -}[‘Gini’,’Entropy’]: Measures the quality of the split.\\
 \textbf{max\_features -} [‘auto’,’log2’,’sqrt’] : max features considers the number of features when looking for the best split. Auto just picks the best result so had the same result as log2. \\
 \textbf{splitter -} [‘best’, ‘random’]: The strategy used to choose the split at each node. 
 \newline
@@ -200,7 +239,8 @@ See Parameter Importance (Figure \ref{J48_ParamImp1})
 
 \newpage
 \subsection{Random Forest}
-\cite{SklearnEnsembleRandomForestClassifier}
+Discussed below is the hyperparameter \cite{SklearnEnsembleRandomForestClassifier} importance concerning the performance of Random Forest trees:
+
 \par
 \textbf{min\_samples\_split -} The minimum number of samples required to split an internal node \\
 \textbf{min\_samples\_leaf -} The minimum number of samples required to be at a leaf node.  \\
@@ -229,9 +269,8 @@ See Parameter Importance (Figure \ref{RF_ParamImp1})
 \section{Variation in performance with varying learning parameters in Neural Networks}
 % ===================================== LINEAR CLASSIFIER =====================================
 \subsection{Linear Classifier}
-\cite{SklearnLinearModel}
 
-For a linear classifier we have decided to use logistic regression. 
+For a linear classifier, we have decided to use logistic regression. \cite{SklearnLinearModel}
 Shown below is the hyperparameter importance concerning the performance of Logistic Regression.
 
 The accuracy fluctuates depending on which hyperparameters are used. Logistic Regression has a ‘solver’ hyperparameter in sklearn which is the algorithm to use in the optimization. We have tested the following: ‘newton-cg’, ‘lbfgs’, ‘liblinear’, ‘sag’, ‘saga’. Sag and Saga give the best results with 89\% accuracy. Liblinear isn't far behind with 88%.
@@ -258,10 +297,10 @@ See Parameter Importance (Figure \ref{LC_ParamImp1})
 % ===================================== MULTILAYER PERCEPTRON =====================================
 \newpage
 \subsection{Multilayer Perceptron}
-\cite{SklearnNeuralNetwork}
+
 \par
 \label{MLPSection}
-Our sweep on MLP indicated that the relu activation function provided the highest accuracy metric for all classes, our search computed this as the most important metric.
+Our sweep on MLP \cite{SklearnNeuralNetwork} indicated that the relu activation function provided the highest accuracy metric for all classes, our search computed this as the most important metric.
 However, using this we observed severe overfitting on the speed limit signs in all experiments.
 
 \textbf{activation -} Activation function for the hidden layer. \\
@@ -291,48 +330,25 @@ See Parameter Importance (Figure \ref{MLP_ParamImp1})
 Because of the issues with overfitting when running our hyperparameter search, we decided to run a new search, using one of our worst performers, the Multilayer perceptron.
 To do this we changed the optimisation metric to minimize loss and randomly varied the classification labels throughout the search, our goal was to see if we could find a single set of parameters that resulted in a better recall, precision, f1, accuracy and loss.
 
+We noticed extreme overfitting when working with most classifiers, we decided to focus on  MLP specifically because we felt it had the most room for improvement, therefore we decided to experiment with it further by running a more complex sweep.
+The enhanced sweep now uses minimization of loss as the target variable, also it randomly selected a new category of testing data each run and recorded an improved selection of metrics including accuracy, precision, recall, f1, and loss
 
-% ===================================== CONVOLUTIONAL NEURAL NETWORKS =====================================
-
-
-\newpage
-\subsection{Convolutional Neural Networks}
-\begin{center}
-  \begin{table}[h]
-    \begin{tabular}{@{}lll@{}}
-    \toprule
-    Layer type & Output Shape & Param \# \\ \midrule
-    conv2D & (None, 48, 48, 75) & 750 \\ \midrule
-    BatchNormalization & (None, 48, 48, 75) & 300 \\ \midrule
-    MaxPooling2D & (None, 24, 24, 75) & 0 \\ \midrule
-    Conv2D & (None, 24, 24, 50) & 33800 \\ \midrule
-    Dropout & (None, 24, 24, 50) & 0 \\ \midrule
-    BatchNormalization & (None, 24, 24, 50) & 200 \\ \midrule
-    MaxPooling2D & (None, 12, 12, 50) & 0 \\ \midrule
-    Conv2D & (None, 12, 12, 25) & 11275 \\ \midrule
-    BatchNormalization & (None, 12, 12, 25) & 100 \\ \midrule
-    MaxPooling2D & (None, 6, 6, 25) & 0 \\ \midrule
-    Flatten & (None, 900) & 0 \\ \midrule
-    Dense & (None, 512) & 461312 \\ \midrule
-    Dense & (None, 512) & 262656 \\ \midrule
-    Dropout & (None, 512) & 0 \\ \midrule
-    Dense & (None, 10) & 5130 \\ \bottomrule
-    \end{tabular}
-  \end{table}
- \end{center} 
-\subsubsection{Critical limitation of CNN experimental methodology:}
-We were unable to disable memoization between experiments over each loop, so all the parameters are restored between runs within a given experiment, consequently, we noted only significant changes to the loss when training on all classes, after which convergence was achieved in a single epoch. We attempted to clear the model parameters, clear the GPU memory, and model saves the randomly initialised parameters and load them back in between experiments but could not prevent the CNN model using data encoded from previous experiments. This does invalidate our results when compared to the discrete experiments in the previous sections, however, this can be a demonstrable advantage of a CNN, in this situation it consistently correctly classifies the images despite changing the dimensions of the output layer and the classification targets (albeit on the same dataset).
-
-During all experiments with training and testing data, at worst our CNN scored an accuracy of 97\% on the test dataset when classifying all classes, the CNN was capable of correct classification even when 9000 instances were moved from the training set to the testing set.
-
-The CNN was unsurprisingly the best performing classifier, In many of the k-fold experiments the CNN managed an accuracy of 100\%, but this could be due in part to the memoization effect between experiments, this is particularly noticeable on the k-fold experiments.
-
-The reason we expected the best results for the CNN is that we took measures to reduce overfitting, first, we used 2 dropout layers to reduce overfitting, by regularizing the model we try and encourage each neuron to be more independently useful.
-Using the Keras Dataflow class, we produced an augmented dataset, this allowed us to increase the representation of the least represented sign classes, by providing random variance within a zoom, rotation and shift range, effectively providing an infinite stream of data to train with.
-
-For further experiments, it would be interesting to investigate the effects of changing the parameters of the ImageDataGenerator class to train with a wider variety of data.
+\subsubsection{Turn left label}
+Looking closer at the turn left label results a few patterns emerge, the hidden layer size was awarded the highest importance with a low positive correlation to a lower loss, and the learning rate hyperparameter set to constant had the highest overall feature importance with a negative correlation to loss of -0.301.
 
 
+\subsubsection{Beware Pedestrian Crossing looking closer}
+We found a few instances in the sweep providing a Precision and Recall Score of 1. The first observation we made concerned the solver hyperparameter. The majority of these results occurred with the ‘lbfgs’ solver, however, ‘sgd’ was able to achieve these recall and precision metrics also but with a much higher loss between 0.03 and 1.4, whereas ‘lbfgs’ consistently had a loss of less than 0.0016.
+The variance in loss when the ‘identity’ activation function was used was extreme, from 0.00009 to 2.28e+22, this indicates this activation would be an extremely unreliable choice. 
+
+\begin{figure}[H]
+  \centering 
+  \includegraphics[width = \textwidth, height = 0.25\textwidth, keepaspectratio]{Images/MLPPedCrossingTable.png} 
+  \includegraphics[width = \textwidth, height = 0.4\textwidth, keepaspectratio]{Images/MLPedCrossingGraph.png} 
+  \caption {MLP Pedestrian Crossing} \label{MLPPedCrossing}
+\end{figure}
+
+% ===============================================================
 
 \newpage
 \section{Variation in performance according to different metrics}
