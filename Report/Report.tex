@@ -26,8 +26,8 @@
 \begin{document}
 
 % ============ TITLE PAGE ============
-\title{\huge Data Mining \& Machine Learning F20DL \\ Coursework 2} 
-% \\ {\small{\url{ }}}}
+\title{\huge Data Mining \& Machine Learning F20DL \\ Coursework 2 \\
+{\small{\url{https://github.com/friedforfun/SupervisedLearningCW}}}}
 \author{Group 4\\Lewis Wilson, Sam Fay-Hunt, Kamil Szymczak, Chun Man }
 \date{\today}
 \maketitle
@@ -171,6 +171,8 @@ Convolutional Neural Networks worked phenomenally as expected, as they are widel
 
 \subsubsection{Critical limitation of CNN experimental methodology:}
 We were unable to disable memoization between experiments over each loop, so all the parameters are restored between runs within a given experiment, consequently, we noted only significant changes to the loss when training on all classes, after which convergence was achieved in a single epoch. We attempted to clear the model parameters, clear the GPU memory, and model saves the randomly initialised parameters and load them back in between experiments but could not prevent the CNN model using data encoded from previous experiments. This does invalidate our results when compared to the discrete experiments in the previous sections, however, this can be a demonstrable advantage of a CNN, in this situation it consistently correctly classifies the images despite changing the dimensions of the output layer and the classification targets (albeit on the same dataset).
+\par
+\subsubsection{Summary of CNN experimental results}
 
 During all experiments with training and testing data, at worst our CNN scored an accuracy of 97\% on the test dataset when classifying all classes, the CNN was capable of correct classification even when 9000 instances were moved from the training set to the testing set.
 
@@ -180,6 +182,14 @@ The reason we expected the best results for the CNN is that we took measures to 
 Using the Keras Dataflow class, we produced an augmented dataset, this allowed us to increase the representation of the least represented sign classes, by providing random variance within a zoom, rotation and shift range, effectively providing an infinite stream of data to train with.
 
 For further experiments, it would be interesting to investigate the effects of changing the parameters of the ImageDataGenerator class to train with a wider variety of data.
+
+From Figure \ref{CNNResults}, we can see that using an augmented dataset reduces overfitting and delays the convergence epoch to later in the training process.
+\begin{figure}[H]
+  \centering 
+  \includegraphics[width = 0.8\textwidth, keepaspectratio]{Images/CNN_resultsWithBaseTestData.png} 
+  \caption {CNN results with baseline testing data, accuracy is training accuracy, and val\_accuracy is testing accuracy.} \label{CNNResults}
+\end{figure}
+
 
 \newpage
 \section{Methodology for Optimising hyperparameters}
@@ -201,7 +211,7 @@ For the evaluation of our hyperparameters, we gathered data on the linear correl
 \par
 The feature importance metric is useful to identify the features that have a larger impact on the output of the model, coupled with correlation we can find the direction of the relationship. It may be the case that a very important feature is extremely bad for the result, in this case, we will see a strong negative correlation, this information helps us hone in on the best hyperparameters to use to maximise accuracy.
 \par
-This however, caused the models to instead maximise hyperparameters tendency to overfit this very imbalanced dataset.
+Using the accuracy metric however, caused the models to instead maximise the hyperparameters tendency to overfit this very imbalanced dataset.
 \newpage
 \section{Variation in performance with varying learning parameters in Decision Trees}
 % ===================================== J48 =====================================
@@ -327,18 +337,17 @@ However, using this we observed severe overfitting on the speed limit signs in a
 \FloatBarrier
 See Parameter Importance (Figure \ref{MLP_ParamImp1})
 
-Because of the issues with overfitting when running our hyperparameter search, we decided to run a new search, using one of our worst performers, the Multilayer perceptron.
-To do this we changed the optimisation metric to minimize loss and randomly varied the classification labels throughout the search, our goal was to see if we could find a single set of parameters that resulted in a better recall, precision, f1, accuracy and loss.
+\subsection{Further experiments}
 
-We noticed extreme overfitting when working with most classifiers, we decided to focus on  MLP specifically because we felt it had the most room for improvement, therefore we decided to experiment with it further by running a more complex sweep.
-The enhanced sweep now uses minimization of loss as the target variable, also it randomly selected a new category of testing data each run and recorded an improved selection of metrics including accuracy, precision, recall, f1, and loss
+We noticed extreme overfitting when working with most classifiers after running our hyperparameter search, next we decided to run a new search, using one of our worst performers, the Multi-Layer perceptron because we felt it had the most room for improvement. Therefore we decided to experiment with it further by running a more complex sweep.
+To do this we changed the optimisation metric to minimize loss and randomly varied the classification labels throughout the search, our goal was to see if we could find a single set of parameters that resulted in a better recall, precision, f1, accuracy and loss.
 
 \subsubsection{Turn left label}
 Looking closer at the turn left label results a few patterns emerge, the hidden layer size was awarded the highest importance with a low positive correlation to a lower loss, and the learning rate hyperparameter set to constant had the highest overall feature importance with a negative correlation to loss of -0.301.
 
 
-\subsubsection{Beware Pedestrian Crossing looking closer}
-We found a few instances in the sweep providing a Precision and Recall Score of 1. The first observation we made concerned the solver hyperparameter. The majority of these results occurred with the ‘lbfgs’ solver, however, ‘sgd’ was able to achieve these recall and precision metrics also but with a much higher loss between 0.03 and 1.4, whereas ‘lbfgs’ consistently had a loss of less than 0.0016.
+\subsubsection{Beware Pedestrian Crossing - Looking closer}
+We found a few instances in the sweep providing a Precision and Recall Score of 1 \ref{MLPPedCrossing}. The first observation we made concerned the solver hyperparameter. The majority of these results occurred with the ‘lbfgs’ solver, however, ‘sgd’ was able to achieve these recall and precision metrics also but with a much higher loss between 0.03 and 1.4, whereas ‘lbfgs’ consistently had a loss of less than 0.0016.
 The variance in loss when the ‘identity’ activation function was used was extreme, from 0.00009 to 2.28e+22, this indicates this activation would be an extremely unreliable choice. 
 
 
@@ -346,11 +355,11 @@ The variance in loss when the ‘identity’ activation function was used was ex
   \centering 
   \includegraphics[width = \textwidth, height = 0.25\textwidth, keepaspectratio]{Images/MLPPedCrossingTable.png} 
   \includegraphics[width = \textwidth, height = 0.4\textwidth, keepaspectratio]{Images/MLPedCrossingGraph.png} 
-  \caption {MLP Pedestrian Crossing} \label{MLPPedCrossing}
+  \caption {MLP Pedestrian Crossing, table of hyperparameter sweep results with corresponding line chart} \label{MLPPedCrossing}
 \end{figure}
 \FloatBarrier
 
-During the experiment we noticed the worst predictions with 0 precision and recall that MLP results almost always use either ‘adam’ or ‘sgd’ solver and tend to iterate around 20 times before terminating in most cases. We suspect this due to the algorithm being stuck in local maxima and the convergence conditions are satisfied, thus the algorithm terminates early. We observed that the majority of class labels are speed signs. 
+During the experiment, we noticed the worst predictions with 0 precision and recall (See Fig \ref{MLPSweepResults}) that MLP results almost always use either ‘adam’ or ‘sgd’ solver and tend to iterate around 20 times before terminating in most cases. We suspect this due to the algorithm being stuck in local maxima and the convergence conditions are satisfied, thus the algorithm terminates early. We observed that the majority of class labels where this occurs are speed signs. 
 
 \begin{figure}[H]
   \centering 
@@ -361,7 +370,15 @@ During the experiment we noticed the worst predictions with 0 precision and reca
 
 \subsubsection{Conclusions about the extended MLP sweep}
 
-Overall, experiment made it clear that each test set would benefit from individual hyperparameter profiles customised to the data, the only notable correlation with a minimized loss we observed was the ‘lbfgs’ solver, with a positive correlation of 0.317, otherwise all metrics demonstrated correlations between -0.17 and 0.078.
+Overall, the experiment made it clear that each test set would benefit from individual hyperparameter profiles customised to the data, the only notable correlation with a minimized loss we observed was the ‘lbfgs’ solver, with a positive correlation for recall and precision scores of 0.317, otherwise all metrics demonstrated correlations between -0.2 and 0.078 \ref{MLPSweepAccuracy}.
+
+\begin{figure}[H]
+  \centering 
+  \includegraphics[width = \textwidth, height = 0.4\textwidth, keepaspectratio]{Images/MLPParamImp-Recall.png} 
+  \caption {MLP - Parameter importance with respect to Recall score} \label{MLPSweepAccuracy}
+\end{figure}
+
+
 
 % ===============================================================
 
