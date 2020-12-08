@@ -17,7 +17,8 @@
 \usepackage{rotating}
 \usepackage{placeins}
 \usepackage{booktabs}
-\usepackage{cite}
+\usepackage[backend=biber, style=ieee]{biblatex}
+\addbibresource{Library.bib}
 
 \setlength{\parskip}{1em}
 \setlength{\parindent}{0pt}
@@ -40,14 +41,14 @@
 % ============ INTRODUCTION ============
 \newpage
 \section{Introduction}
-Based on our experience from Coursework 1 we were aware that many machine learning models would perform poorly with a poorly balanced class distribution, we took measures to resolve this class distribution problem in coursework 1 and this resolved the overfitting issues.\\
+Based on our experience from Coursework 1 we were aware that many machine learning models would perform poorly with a poorly balanced class distribution, we took measures to resolve this class distribution problem in coursework 1 and this resolved the overfitting issues.
 We chose not to use these techniques so we could test the machine learning models with an inadequate dataset, to give us insight into how the different models perform in this situation.
 
-We wrote all experiments in Python 3, using SKlearn because it was easy to implement the models under an interface and pass the discrete models as parameters to “run experiment” functions, we used Tensorflow+Keras for the CNN implementation for ease of use, and speed of training (because of easy integration with Cuda). \\
+We wrote all experiments in Python 3, using SKlearn because it was easy to implement the models under an interface and pass the discrete models as parameters to “run experiment” functions, we used Tensorflow+Keras for the CNN implementation for ease of use, and speed of training (because of easy integration with Cuda). 
 To record and visualise experimental data we used Weights and Biases, this allowed us to perform experiments discretely and share all the results as they were generated.
 
-The purpose of these experiments is to explore how variance in data can affect machine learning models with respect to overfitting. \\
-To do this we ran 4 Experiments with each model, covering two machine learning paradigms, we could then compare the behaviour, and try to gain insight into if and why they perform so poorly with data using bad class distributions.\\
+The purpose of these experiments is to explore how variance in data can affect machine learning models with respect to overfitting. 
+To do this we ran 4 Experiments with each model, covering two machine learning paradigms, we could then compare the behaviour, and try to gain insight into if and why they perform so poorly with data using bad class distributions.
 For all but the CNN we recorded the Accuracy, F1, Precision, and Recall metrics, additionally we plotted the confusion matrix, precision-recall curves, ROC curve, class proportions, calibration curve, and learning curve.
 
 The 4 experiments that were run are as follows:
@@ -59,70 +60,72 @@ The 4 experiments that were run are as follows:
 
 We used the same seed when moving the data from the training set to the testing set, so all experiments for a given classifier used the same training and testing data.
 
+\begin{figure}[H]
+  \centering 
+  \includegraphics[width = \textwidth, height = 0.5\textwidth, keepaspectratio]{Images/StratKFold.png} 
+  \caption {Stratified KFolds, Visualised class distributions in each fold (Group)} \label{StratKFold}
+\end{figure}
 
-
-\subsection{Methodology}
-We used the same seed when moving the data from the training set to the testing set, so all experiments for a given classifier used the same training and testing data.
-
-\par
-
-\newpage
 \section{Variation in performance with size of the training and testing sets}
-To investigate the variation in performance we selected a single class with a very poor class distribution: “Turn left”.
-\subsection{Inspecting Turn Left results}
+To investigate the variation in performance we began by looking closely at a single class with a very poor class distribution: “Turn left”.
+
 The turn left dataset has an extremely small number of instances in its training dataset for 9000 moved to testing, Thus we would expect the worst prediction accuracy, in this case, the situation was so bad that our accuracy scores became misleading. Because the representation of ‘turn left’ was so poor in our dataset most of the classifiers simply predicted that there were no instances of turn left in the dataset and recorded a deceiving 97\% accuracy (because 97\% of the dataset is not in fact turn left). It turned out this problem appeared for all binary classifications with the Random Forest classifier and Multilayer perceptron.
 \par
 The only classifiers that did not exhibit this behaviour were the Logistic Regression (LR) and Convolutional Neural Network classifiers (CNN). CNN scored a staggering 99.9\% accuracy with the same minuscule training data, while LR managed 98.3\% with 200 false negatives, 5 false positives and 60 true positives.
 \newline
 \par
-\begin{figure}[h]
-  \caption {Class proportions in target variable}
+\begin{figure}[H]
+  \caption {All class proportions of train (dark blue) to test (light blue)}
   \centering 
   \includegraphics[width = \textwidth, height = 0.5\textheight, keepaspectratio]{Images/classProportionsInTargetVariable.png}
 \end{figure}
-An example distribution of labels between train (dark blue) and test (light blue), for the Beware cycle route ahead class. 
+An example distribution of labels between train (dark blue) and test (light blue), for the Beware cycle route ahead class labels, Figures~\ref{fig:turnLeftClassProp},~\ref{fig:turnLeft4k},~\ref{fig:turnLeft9K} show how the proportion of training data moves more substantially for the `no` class, while the `yes' class is so small the change is marginal.
 
-\newpage
 
-\begin{figure}[h]
-  \caption {Class proportions in target variable}
+\begin{figure}[H]
+  \caption {Beware cycle route ahead class proportions}\label{fig:turnLeftClassProp}
   \centering 
   \includegraphics[width = \textwidth, height = 0.5\textheight, keepaspectratio]{Images/Sec1Original.png}
 \end{figure}
 
-
-\begin{figure}[h]
-  \caption {Class proportions in target variable}
+\begin{figure}[H]
+  \caption {Beware cycle route ahead class proportions with 4000 moved to tests}\label{fig:turnLeft4k}
   \centering 
   \includegraphics[width = \textwidth, height = 0.5\textheight, keepaspectratio]{Images/Sec1-4k.png}
 \end{figure}
 
-
-\begin{figure}[h]
-  \caption {Class proportions in target variable}
+\begin{figure}[H]
+  \caption {Beware cycle route ahead class proportions with 9000 moved to tests}\label{fig:turnLeft9K}
   \centering 
   \includegraphics[width = \textwidth, height = 0.5\textheight, keepaspectratio]{Images/Sec1-9k.png}
 \end{figure}
 
+Starting out, we observed the results of J48, the issues are immediately clear, even in the experiment with the full training set J48 is poor at attempting to predict on this kind of data.
+When working with `all classes' it is only able to classify the very well represented speed limit signs reliably as speed limit signs, so it manages a high precision at classifying a meta-class of the group of speed limit 30, 50, 60, or 70 signs.
+Within this meta-class the accuracy at distinguishing between them is approximately 50\% on average.
 
-Starting out we observed the results of J48, the issues are immediately clear, even in the experiment with the full training set J48 is poor at attempting to predict on this kind of data, when working with all classes it is unable to reliably distinguish between the speed limit signs, and a non-speed limit sign, but beyond that it consistently quite evenly classified with any class label.
-
-\begin{figure}[h!]
+\begin{figure}[H]
   \caption {J48 Confusion Matrix}
   \centering 
   \includegraphics[width = \textwidth, height = 0.3\textheight, keepaspectratio]{Images/J48ConfMat.png}
 \end{figure}
 \FloatBarrier
-As the test set grows we can observe a similar story, the J48 classifier gets substantially worse at distinguishing between speed limit signs and other signs because the representation of those signs in the dataset gets very low.
+\par
+\par
+As the test set grows we can observe that the J48 classifier gets substantially worse at distinguishing between speed limit signs and other signs because the representation of those signs in the dataset gets very low.
 
-With all the classifiers except Logistic Regression and the CNN we see the same story, Multi-layer perceptron and random forest particularly suffers from this poor class representation issue in the data. We can see for figure [x] that the Multilayer perceptron assigns most labels for 3 classes: Speed limit 30, 50, 70. It also assigns a small number of labels for speed limit 70.
+With all the classifiers except Logistic Regression and the CNN we see the same story, Multi-Layer perceptron and random forest particularly suffer from this poor class representation issue in the data. We can see in Figure \ref{MLPConfMat} that the Multi-Layer perceptron assigns most labels for 3 classes: Speed limit 30, 50, 70. It also assigns a small number of labels for speed limit 20. So in this baseline test it is already showing overfitting behaviour.
+
+In the test where 9000 instances are moved the overfitting behaviour gets much worse, the Multi-Layer perceptron classifies everything as either speed limit 30 or speed limit 70.
 
 
 \begin{figure}[h]
-  \caption {Multilayer Perceptron Confusion Matrix}
+  \caption {Multilayer Perceptron Confusion Matrix} \label{MLPConfMat}
   \centering 
   \includegraphics[width = \textwidth, height = 0.3\textheight, keepaspectratio]{Images/Sec1-ConfMat2.png}
 \end{figure}
+
+
 
 \newpage
 \section{Variation in performance with the change in the learning paradigm}
@@ -143,23 +146,26 @@ Convolutional Neural Networks worked phenomenally as expected, as they are widel
 \section{Variation in performance with varying learning parameters in Decision Trees}
 % ===================================== J48 =====================================
 \subsection{Optimising Hyperparameters}
-\cite{SklearnTreeDecisionTreeClassifier}
+\autocite{SklearnTreeDecisionTreeClassifier}
 
 Our hyperparameter optimization used Bayesian Optimization \cite{Configuration}. This gaussian process models the function and then chooses parameters to optimize by determining the probability of improvement according to the accuracy metric. 
 \par
 We opted to use the ‘all classes’ dataset for these sweeps because in our preliminary experiments we noticed the worst prediction accuracy with 10 classes.
 
-The figure below shows a high-level overview of the MLP sweep, dark blue lines indicate lower accuracy and yellow had the highest accuracy. (See Figure \ref{MLPSection})
+Figure \ref{MLPLineGraph} shows a high-level overview of the MLP sweep, dark blue lines indicate lower accuracy and yellow had the highest accuracy. (See Section \ref{MLPSection})
 
-\begin{center}
-  \includegraphics [width = \textwidth, height = 0.3\textheight, keepaspectratio]{Images/MLP ParallelCoordGraph.png}
-\end{center}
+\begin{figure}[h]
+  \caption {Multilayer Perceptron} \label{MLPLineGraph}
+  \centering 
+  \includegraphics[width = \textwidth, height = 0.3\textheight, keepaspectratio]{Images/MLP ParallelCoordGraph.png}
+\end{figure}
 
-For the evaluation of our hyperparameters, we gathered data on the linear correlation between each hyperparameter and their accuracy. THe feature importance is calculated from training a random forest with hyperparameters and its metrics. \cite{ParameterImportance}
+
+For the evaluation of our hyperparameters, we gathered data on the linear correlation between each hyperparameter and their accuracy. The feature importance is calculated from training a random forest with hyperparameters and its metrics. \cite{ParameterImportance}
 \par
-The feature importance metric is useful to identify the features that have a larger impact on the output of the model, coupled with correlation we can find the direction of the relationship. It may be the case that a very important feature is extremely bad for the result, in this case we will see a strong negative correlation, this information helps us hone in on the best hyperparameters to use to maximise accuracy.
+The feature importance metric is useful to identify the features that have a larger impact on the output of the model, coupled with correlation we can find the direction of the relationship. It may be the case that a very important feature is extremely bad for the result, in this case, we will see a strong negative correlation, this information helps us hone in on the best hyperparameters to use to maximise accuracy.
 \par
-This however caused the models to instead maximise hyperparameters tendency to overfit this very imbalanced dataset.
+This however, caused the models to instead maximise hyperparameters tendency to overfit this very imbalanced dataset.
 \newpage
 \subsection{J48}
 
@@ -246,7 +252,7 @@ Additionally ‘sag’ and ‘saga’ guarantee fast convergence on features wit
 
 
   \end{tabular}
-\end{table}\label{RF_Analysis_Table}
+\end{table}\label{LC_Analysis_Table}
 See Parameter Importance (Figure \ref{LC_ParamImp1})
 
 % ===================================== MULTILAYER PERCEPTRON =====================================
@@ -282,34 +288,36 @@ However using this we observed severe overfitting on the speed limit signs in al
 \FloatBarrier
 See Parameter Importance (Figure \ref{MLP_ParamImp1})
 
+Because of the issues with overfitting when running our hyperparameter search, we decided to run a new search, using one of our worst performers, the Multilayer perceptron.
+To do this we changed the optimisation metric to minimize loss and randomly varied the classification labels throughout the search, our goal was to see if we could find a single set of parameters that resulted in a better recall, precision, f1, accuracy and loss.
+
+
 % ===================================== CONVOLUTIONAL NEURAL NETWORKS =====================================
 
 
 \newpage
 \subsection{Convolutional Neural Networks}
 \begin{center}
-  
-
-\begin{table}[h]
-  \begin{tabular}{@{}lll@{}}
-  \toprule
-  Layer type & Output Shape & Param \# \\ \midrule
-  conv2D & (None, 48, 48, 75) & 750 \\ \midrule
-  BatchNormalization & (None, 48, 48, 75) & 300 \\ \midrule
-  MaxPooling2D & (None, 24, 24, 75) & 0 \\ \midrule
-  Conv2D & (None, 24, 24, 50) & 33800 \\ \midrule
-  Dropout & (None, 24, 24, 50) & 0 \\ \midrule
-  BatchNormalization & (None, 24, 24, 50) & 200 \\ \midrule
-  MaxPooling2D & (None, 12, 12, 50) & 0 \\ \midrule
-  Conv2D & (None, 12, 12, 25) & 11275 \\ \midrule
-  BatchNormalization & (None, 12, 12, 25) & 100 \\ \midrule
-  MaxPooling2D & (None, 6, 6, 25) & 0 \\ \midrule
-  Flatten & (None, 900) & 0 \\ \midrule
-  Dense & (None, 512) & 461312 \\ \midrule
-  Dense & (None, 512) & 262656 \\ \midrule
-  Dropout & (None, 512) & 0 \\ \midrule
-  Dense & (None, 10) & 5130 \\ \bottomrule
-  \end{tabular}
+  \begin{table}[h]
+    \begin{tabular}{@{}lll@{}}
+    \toprule
+    Layer type & Output Shape & Param \# \\ \midrule
+    conv2D & (None, 48, 48, 75) & 750 \\ \midrule
+    BatchNormalization & (None, 48, 48, 75) & 300 \\ \midrule
+    MaxPooling2D & (None, 24, 24, 75) & 0 \\ \midrule
+    Conv2D & (None, 24, 24, 50) & 33800 \\ \midrule
+    Dropout & (None, 24, 24, 50) & 0 \\ \midrule
+    BatchNormalization & (None, 24, 24, 50) & 200 \\ \midrule
+    MaxPooling2D & (None, 12, 12, 50) & 0 \\ \midrule
+    Conv2D & (None, 12, 12, 25) & 11275 \\ \midrule
+    BatchNormalization & (None, 12, 12, 25) & 100 \\ \midrule
+    MaxPooling2D & (None, 6, 6, 25) & 0 \\ \midrule
+    Flatten & (None, 900) & 0 \\ \midrule
+    Dense & (None, 512) & 461312 \\ \midrule
+    Dense & (None, 512) & 262656 \\ \midrule
+    Dropout & (None, 512) & 0 \\ \midrule
+    Dense & (None, 10) & 5130 \\ \bottomrule
+    \end{tabular}
   \end{table}
  \end{center} 
 \subsubsection{Critical limitation of CNN experimental methodology:}
@@ -322,7 +330,7 @@ The CNN was unsurprisingly the best performing classifier, In many of the k-fold
 The reason we expected the best results for the CNN is that we took measures to reduce overfitting, first, we used 2 dropout layers to reduce overfitting, by regularizing the model we try and encourage each neuron to be more independently useful.
 Using the Keras Dataflow class, we produced an augmented dataset, this allowed us to increase the representation of the least represented sign classes, by providing random variance within a zoom, rotation and shift range, effectively providing an infinite stream of data to train with.
 
-For further experiments, it would be interesting to investigate the effects of changing the parameters of the Dataflow class to train with a wider variety of data.
+For further experiments, it would be interesting to investigate the effects of changing the parameters of the ImageDataGenerator class to train with a wider variety of data.
 
 
 
@@ -354,9 +362,9 @@ Logistic Regression is excellent at predicting classes for the dataset, which co
 \appendix
 \appendixpage
 \addappheadtotoc
-\begin{appendices}
+%\begin{appendices}
 
-\section{Appendix A}
+\section{Workload}
 
 % =================== Workload Split Table ===================
 
@@ -367,15 +375,17 @@ Logistic Regression is excellent at predicting classes for the dataset, which co
     \begin{tabular}{|p{0.2\linewidth} | p{0.75\linewidth}|} 
       \hline
       \textbf{Team member}  & \textbf{Involvement} \\ \hline
-      Lewis Wilson & text here \\ \hline
+      Lewis Wilson & Contributed to the experimenting and analysis of J48, Report writing. \\ \hline
       Chun Man & Contributed to the experimenting and analysis of Random Forest, Report writing. \\ \hline
-      Sam Fay-Hunt & text here \\ \hline
+      Sam Fay-Hunt & Contributed to the report, coded all the automated experiments, weights and biases logging and integration, the interface used by each sklearn model, and the entire CNN. \\ \hline
       Kamil Szymczak & text here \\ \hline
     \end{tabular}
   \end{table}\label{ContributionTab}
 
 As a team we are happy with everyone's contributions to the project. All team members were punctual and showed up to all scheduled meetings. Sam took the lead as project manager throughout the project delegating the workload and providing support to others.
 
+\section{References}
+\printbibliography
 
 % =================== J48 APPENDIX here ===================
 \newpage
@@ -551,20 +561,11 @@ As a team we are happy with everyone's contributions to the project. All team me
   \includegraphics[width = \textwidth, height = 0.5\textwidth, keepaspectratio]{Images/KFold.png}
 \end{figure}
 
-\begin{figure}[h]
-  \caption {Stratified KFolds} \label{StratKFold}
-  \centering 
-  \includegraphics[width = \textwidth, height = 0.5\textwidth, keepaspectratio]{Images/StratKFold.png}
-\end{figure}
+
 \FloatBarrier
 % =================== END APPENDIX ===================
-\end{appendices}
+%\end{appendices}
 
-\newpage
-\raggedright
-\nocite{zhaoComparisonDecisionTree2008}
-\bibliography{Library}
-\bibliographystyle{plain}
 
 \end{document}
 
