@@ -341,12 +341,27 @@ Looking closer at the turn left label results a few patterns emerge, the hidden 
 We found a few instances in the sweep providing a Precision and Recall Score of 1. The first observation we made concerned the solver hyperparameter. The majority of these results occurred with the ‘lbfgs’ solver, however, ‘sgd’ was able to achieve these recall and precision metrics also but with a much higher loss between 0.03 and 1.4, whereas ‘lbfgs’ consistently had a loss of less than 0.0016.
 The variance in loss when the ‘identity’ activation function was used was extreme, from 0.00009 to 2.28e+22, this indicates this activation would be an extremely unreliable choice. 
 
+
 \begin{figure}[H]
   \centering 
   \includegraphics[width = \textwidth, height = 0.25\textwidth, keepaspectratio]{Images/MLPPedCrossingTable.png} 
   \includegraphics[width = \textwidth, height = 0.4\textwidth, keepaspectratio]{Images/MLPedCrossingGraph.png} 
   \caption {MLP Pedestrian Crossing} \label{MLPPedCrossing}
 \end{figure}
+\FloatBarrier
+
+During the experiment we noticed the worst predictions with 0 precision and recall that MLP results almost always use either ‘adam’ or ‘sgd’ solver and tend to iterate around 20 times before terminating in most cases. We suspect this due to the algorithm being stuck in local maxima and the convergence conditions are satisfied, thus the algorithm terminates early. We observed that the majority of class labels are speed signs. 
+
+\begin{figure}[H]
+  \centering 
+  \includegraphics[width = \textwidth, height = 0.5\textwidth, keepaspectratio]{Images/MLPSweepResults-precAndRecall.png} 
+  \caption {MLP sweep results - grouping by class label where precision \& recall are 0.} \label{MLPSweepResults}
+\end{figure}
+\FloatBarrier
+
+\subsubsection{Conclusions about the extended MLP sweep}
+
+Overall, experiment made it clear that each test set would benefit from individual hyperparameter profiles customised to the data, the only notable correlation with a minimized loss we observed was the ‘lbfgs’ solver, with a positive correlation of 0.317, otherwise all metrics demonstrated correlations between -0.17 and 0.078.
 
 % ===============================================================
 
