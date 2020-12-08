@@ -135,7 +135,7 @@ In the test where 9000 instances are moved the overfitting behaviour gets much w
 \end{itemize}
 We have found decision trees performed very poorly particularly when the training data was reduced and also so did the MultiLayer Perceptron which had overfitting issues. Both of these classifiers had 0 recall and 0 precision for predicting individual classes datasets. This means they have not predicted correctly a single sign and should not be used in prediction road signs from images. Our results perfectly support the weak points about decision trees such as that there are variable relationships that decision trees just can’t learn and they are unstable as a small change in the data can lead to a large change in the structure of the optimal decision tree \cite{zhaoComparisonDecisionTree2008}.
 \par
-However Logistic Regression performed considerably better, it was actually the best performer from all classification techniques we have used and tested, aside from the CNN. 
+However, Logistic Regression performed considerably better, it was actually the best performer from all classification techniques we have used and tested, aside from the CNN. 
 \par
 Logistic Regression has given best results thus it was less vulnerable to poor class distributions and dealt nicely with overfitted data. A benefit of logistic regression is its interpretability as it understands which pixels are important to determinate what class an image belongs to.
 \par
@@ -262,7 +262,7 @@ See Parameter Importance (Figure \ref{LC_ParamImp1})
 \par
 \label{MLPSection}
 Our sweep on MLP indicated that the relu activation function provided the highest accuracy metric for all classes, our search computed this as the most important metric.
-However using this we observed severe overfitting on the speed limit signs in all experiments.
+However, using this we observed severe overfitting on the speed limit signs in all experiments.
 
 \textbf{activation -} Activation function for the hidden layer. \\
 \textbf{alpha -} L2 penalty (regularization term) parameter. \\
@@ -321,7 +321,7 @@ To do this we changed the optimisation metric to minimize loss and randomly vari
   \end{table}
  \end{center} 
 \subsubsection{Critical limitation of CNN experimental methodology:}
-We were unable to disable memoization between experiments over each loop, so all the parameters are restored between runs within a given experiment, consequently, we noted only significant changes to the loss when training on all classes, after which convergence was achieved in a single epoch. We attempted to clear the model parameters, clear the GPU memory, and model save the randomly initialised parameters and load them back in between experiments but could not prevent the CNN model using data encoded from previous experiments. This does invalidate our results when compared to the discrete experiments in the previous sections, however, this can be a demonstrable advantage of a CNN, in this situation it consistently correctly classifies the images despite changing the dimensions of the output layer and the classification targets (albeit on the same dataset).
+We were unable to disable memoization between experiments over each loop, so all the parameters are restored between runs within a given experiment, consequently, we noted only significant changes to the loss when training on all classes, after which convergence was achieved in a single epoch. We attempted to clear the model parameters, clear the GPU memory, and model saves the randomly initialised parameters and load them back in between experiments but could not prevent the CNN model using data encoded from previous experiments. This does invalidate our results when compared to the discrete experiments in the previous sections, however, this can be a demonstrable advantage of a CNN, in this situation it consistently correctly classifies the images despite changing the dimensions of the output layer and the classification targets (albeit on the same dataset).
 
 During all experiments with training and testing data, at worst our CNN scored an accuracy of 97\% on the test dataset when classifying all classes, the CNN was capable of correct classification even when 9000 instances were moved from the training set to the testing set.
 
@@ -335,20 +335,19 @@ For further experiments, it would be interesting to investigate the effects of c
 
 
 \newpage
-\section{Variation in performance according to different metrics (TP Rate, FP Rate, Precision,
-Recall, F Measure, ROC Area)}
+\section{Variation in performance according to different metrics}
 \subsection{J48 Experiments}
 
 J48 with default test set cycle route ahead binary classification gave a very high precision (~0.95) and a really low recall (0.2) 
 Precision shows the ratio of true positives to all the positives, therefore in our use case we have a ratio of signs that the classifier classified correctly to the total the classifier thought are positive. 
 \par
 Using cycle route ahead dataset as an example, for all signs that are actually cycle route ahead signs the recall tells us how many the classifier classified as cycle route ahead  signs. 
-Therefore J48 is very picky and doesn't think many signs are cycle route ahead signs. Pretty much all signs it thinks are cycle route ahead signs are indeed cycle route ahead signs. However it also misses a lot of cycle route ahead signs, because it is very picky.
+Therefore J48 is very picky and doesn't think many signs are cycle route ahead signs. Pretty much all signs it thinks are cycle route ahead signs are indeed cycle route ahead signs. However, it also misses a lot of cycle route ahead signs, because it is very picky.
 \par
-With the default test set, J48 provides a precision, recall and f1 scores of 0 for the right turn, left turn, beware pedestrian crossing and speed limit 20 classes the reason is due to 0 true positive classifications.When we investigate why this is for the beware pedestrian crossing class, we noticed the data has a heavy skew of class proportions towards ‘No’ with very few instances of ‘Yes’ found. In fact, this is the case for all of the class labels with scores of 0 for precision, recall and f1.
+With the default test set, J48 provides a precision, recall and f1 scores of 0 for the right turn, left turn, beware pedestrian crossing and speed limit 20 classes the reason is due to 0 true positive classifications. When we investigate why this is for the beware pedestrian crossing class, we noticed the data has a heavy skew of class proportions towards ‘No’ with very few instances of ‘Yes’ found. In fact, this is the case for all of the class labels with scores of 0 for precision, recall and f1.
 
 \subsection{Random Forest \& MLP}
-Both random forest and MLP suffered overfit issues particularly with binary class labels; they scored 0 for precision, recall, and F1 in all experiments. We hypothesize this is caused by the same reasons described in Section 1. Likewise all classes perform poorly the model classifies every class as exclusively either speed limit 30, 50, and 70 in the training and testing data sets, the k-fold experiments simply classifies all classes as speed limit 50; the most well-represented class in our dataset. 
+Both random forest and MLP suffered overfit issues particularly with binary class labels; they scored 0 for precision, recall, and F1 in all experiments. We hypothesize this is caused by the same reasons described in Section 1. Likewise, all classes perform poorly the model classifies every class as exclusively either speed limit 30, 50, and 70 in the training and testing data sets, the k-fold experiments simply classifies all classes as speed limit 50; the most well-represented class in our dataset. 
 
 \subsection{Logistic Regresssion}
 Logistic Regression is excellent at predicting classes for the dataset, which contains all signs, which is not easy to do. Logistic Regression has relatively good precision and recall when compared to other classifiers with 89 for both. This means it is very good at predicting all different signs.
@@ -382,7 +381,7 @@ Logistic Regression is excellent at predicting classes for the dataset, which co
     \end{tabular}
   \end{table}\label{ContributionTab}
 
-As a team we are happy with everyone's contributions to the project. All team members were punctual and showed up to all scheduled meetings. Sam took the lead as project manager throughout the project delegating the workload and providing support to others.
+As a team, we are happy with everyone's contributions to the project. All team members were punctual and showed up to all scheduled meetings. Sam took the lead as project manager throughout the project delegating the workload and providing support to others.
 
 \section{References}
 \printbibliography
@@ -568,9 +567,3 @@ As a team we are happy with everyone's contributions to the project. All team me
 
 
 \end{document}
-
-  % \begin{sidewaysfigure}[h]
-  %   \caption {Accuracy over time - J48} \label{J48AccOverTime}
-  %   \centering
-  %   \includegraphics[width = \textwidth, height = \textwidth, keepaspectratio]{Images/J48 Acc over time.png}
-  % \end{sidewaysfigure}
