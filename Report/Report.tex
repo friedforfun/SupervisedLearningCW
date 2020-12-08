@@ -47,9 +47,9 @@ We chose not to use these techniques so we could test the machine learning model
 We wrote all experiments in Python 3, using SKlearn because it was easy to implement the models under an interface and pass the discrete models as parameters to “run experiment” functions, we used Tensorflow+Keras for the CNN implementation for ease of use, and speed of training (because of easy integration with Cuda). 
 To record and visualise experimental data we used Weights and Biases, this allowed us to perform experiments discretely and share all the results as they were generated.
 
-The purpose of these experiments is to explore how variance in data can affect machine learning models with respect to overfitting. 
+The purpose of these experiments is to explore how variances in data, learning paradigm and hyperparameters can affect machine learning model performance with respect to overfitting. 
 To do this we ran 4 Experiments with each model, covering two machine learning paradigms, we could then compare the behaviour, and try to gain insight into if and why they perform so poorly with data using bad class distributions.
-For all but the CNN we recorded the Accuracy, F1, Precision, and Recall metrics, additionally we plotted the confusion matrix, precision-recall curves, ROC curve, class proportions, calibration curve, and learning curve.
+For all but the CNN we recorded the Accuracy, F1, Precision, and Recall metrics, additionally we plotted the confusion matrix, precision-recall curves, ROC curve, class proportions, calibration curve, and learning curve. \cite{WeightsBiases}
 
 The 4 experiments that were run are as follows:
 \begin{itemize}
@@ -377,14 +377,65 @@ Logistic Regression is excellent at predicting classes for the dataset, which co
       Lewis Wilson & Contributed to the experimenting and analysis of J48, Report writing. \\ \hline
       Chun Man & Contributed to the experimenting and analysis of Random Forest, Report writing. \\ \hline
       Sam Fay-Hunt & Contributed to the report, coded all the automated experiments, weights and biases logging and integration, the interface used by each sklearn model, and the entire CNN. \\ \hline
-      Kamil Szymczak & text here \\ \hline
+      Kamil Szymczak & Contributed to the experimenting and analysis of Logistic Regression, Report writing. \\ \hline
     \end{tabular}
   \end{table}\label{ContributionTab}
 
 As a team, we are happy with everyone's contributions to the project. All team members were punctual and showed up to all scheduled meetings. Sam took the lead as project manager throughout the project delegating the workload and providing support to others.
 
+\newpage
 \section{References}
 \printbibliography
+
+\newpage
+\section{Links to experimental results}
+The following is a list of the links to all of our experimental data.
+
+\subsection{J48}
+\begin{itemize}
+  \item \href{https://wandb.ai/supervisedlearning/J48%20all%20Kfolds/?workspace=user-jimmym620}{Kfold}
+  \item \href{https://wandb.ai/supervisedlearning/J48%20all%20test%20set%20experiments?workspace=user-dardric}{Baseline test}
+  \item \href{https://wandb.ai/supervisedlearning/J48%20all%204000%20moved%20to%20test%20experiments?workspace=user-dardric}{4k instances moved to test}
+  \item \href{https://wandb.ai/supervisedlearning/J48%20all%209000%20moved%20to%20test%20experiments?workspace=user-dardric}{9k instances moved to test}
+  \item \href{https://wandb.ai/supervisedlearning/J48-sweeps/sweeps/iujbgua2?workspace=user-dardric}{Hyperparameter sweep}
+\end{itemize}
+
+\subsection{Random Forest}
+\begin{itemize}
+  \item \href{https://wandb.ai/supervisedlearning/RF%20all%20Kfolds?workspace=user-jimmym620}{Kfold}
+  \item \href{https://wandb.ai/supervisedlearning/RF%20all%20test%20set%20experiments?workspace=user-jimmym620}{Baseline test}
+  \item \href{https://wandb.ai/supervisedlearning/RF%20all%204000%20moved%20to%20test%20experiments?workspace=user-jimmym620}{4k instances moved to test}
+  \item \href{https://wandb.ai/supervisedlearning/RF%20all%209000%20moved%20to%20test%20experiments?workspace=user-jimmym620}{9k instances moved to test}
+  \item \href{https://wandb.ai/supervisedlearning/RF-sweeps/sweeps/eh36kpyc?workspace=user-jimmym620}{Hyperparameter sweep}
+\end{itemize}
+
+\subsection{MLP}
+\begin{itemize}
+  \item \href{https://wandb.ai/supervisedlearning/MLP%20all%20Kfolds/experiments?}{Kfold}
+  \item \href{https://wandb.ai/supervisedlearning/MLP%20all%20test%20set%20experiments?}{Baseline test}
+  \item \href{https://wandb.ai/supervisedlearning/MLP%20all%204000%20moved%20to%20test%20experiments?}{4k instances moved to test}
+  \item \href{https://wandb.ai/supervisedlearning/MLP%20all%209000%20moved%20to%20test%20experiments?}{9k instances moved to test}
+  \item \href{https://wandb.ai/supervisedlearning/MLP-sweeps/sweeps/aum1y9nw?workspace=user-samfh}{Initial hyperparameter sweep}
+  \item \href{https://wandb.ai/supervisedlearning/MLP-sweeps/sweeps/ha5qixd1?workspace=user-samfh}{Enhanced hyperparameter sweep}
+\end{itemize}
+
+\subsection{LR}
+\begin{itemize}
+  \item \href{https://wandb.ai/supervisedlearning/LR%20all%20Kfolds?workspace=user-dardric}{Kfold}
+  \item \href{https://wandb.ai/supervisedlearning/LR%20all%20test%20set%20experiments?workspace=user-dardric}{Baseline test}
+  \item \href{https://wandb.ai/supervisedlearning/LR%20all%204000%20moved%20to%20test%20experiments?workspace=user-dardric}{4k instances moved to test}
+  \item \href{https://wandb.ai/supervisedlearning/LR%20all%209000%20moved%20to%20test%20experiments?workspace=user-dardric}{9k instances moved to test}
+  \item \href{https://wandb.ai/supervisedlearning/LC-sweeps/sweeps/409bnuc6?workspace=user-dardric}{Hyperparameter sweep}
+\end{itemize}
+
+\subsection{CNN}
+\begin{itemize}
+  \item \href{https://wandb.ai/supervisedlearning/CNN%20All%20kf%20experiments/table?workspace=user-samfh}{Kfold}
+  \item \href{https://wandb.ai/supervisedlearning/CNN%20all%20test%20set%20experiments?workspace=user-samfh }{Baseline test}
+  \item \href{https://wandb.ai/supervisedlearning/CNN%20all%204000%20moved%20to%20test%20experiments?workspace=user-samfh}{4k instances moved to test}
+  \item \href{https://wandb.ai/supervisedlearning/CNN%20all%209000%20moved%20to%20test%20experiments?workspace=user-samfh}{9k instances moved to test}
+
+\end{itemize}
 
 % =================== J48 APPENDIX here ===================
 \newpage
